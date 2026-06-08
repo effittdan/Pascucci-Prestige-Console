@@ -1,5 +1,6 @@
 node_modules/
 dist/
+.netlify/
 *.tsbuildinfo
 qa-*.png
 qa-final-*.png
