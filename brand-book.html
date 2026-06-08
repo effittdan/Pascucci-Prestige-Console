@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pascucci Prestige Brand Book</title>
+    <style>
+      :root {
+        --obsidian: #090a0b;
+        --charcoal: #202225;
+        --ivory: #f1eee7;
+        --paper: #f7f5f0;
+        --gold: #b89a63;
+        --gold-shadow: #a08040;
+        --gold-highlight: #d0a060;
+        --red: #a7191f;
+        --titanium: #8c9094;
+        --graphite: #303030;
+        --ink: #111214;
+        --muted: #666a6e;
+        --line-dark: rgba(241, 238, 231, 0.16);
+        --line-light: rgba(9, 10, 11, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--obsidian);
+        color: var(--ink);
+        font-family: Inter, "Avenir Next", Helvetica, Arial, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        background: var(--ivory);
+      }
+
+      h1,
+      h2,
+      h3,
+      blockquote {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 500;
+        letter-spacing: 0;
+      }
+
+      p {
+        line-height: 1.62;
+      }
+
+      .brand-book {
+        min-height: 100vh;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.7fr);
+        gap: clamp(28px, 5vw, 72px);
+        align-items: center;
+        min-height: 92vh;
+        padding: clamp(34px, 7vw, 96px);
+        color: var(--paper);
+        background: var(--obsidian);
+      }
+
+      .hero-logo {
+        width: min(520px, 100%);
+        padding: 22px;
+        background: var(--paper);
+        border: 1px solid rgba(184, 154, 99, 0.35);
+      }
+
+      .eyebrow,
+      .meta,
+      .label {
+        color: var(--gold);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .hero h1 {
+        max-width: 900px;
+        margin: 16px 0;
+        font-size: clamp(3.2rem, 8vw, 8rem);
+        line-height: 0.96;
+      }
+
+      .hero p {
+        max-width: 680px;
+        color: rgba(247, 245, 240, 0.78);
+        font-size: clamp(1.05rem, 2vw, 1.34rem);
+      }
+
+      .rule {
+        width: 160px;
+        height: 2px;
+        margin: 30px 0;
+        background: var(--gold);
+      }
+
+      .section {
+        padding: clamp(42px, 7vw, 92px) clamp(24px, 7vw, 96px);
+        border-top: 1px solid var(--line-light);
+      }
+
+      .section.dark {
+        color: var(--paper);
+        background: var(--charcoal);
+        border-top-color: var(--line-dark);
+      }
+
+      .section-header {
+        display: grid;
+        grid-template-columns: minmax(180px, 0.32fr) minmax(0, 1fr);
+        gap: clamp(20px, 4vw, 54px);
+        align-items: start;
+        margin-bottom: 36px;
+      }
+
+      .section h2 {
+        margin: 0;
+        font-size: clamp(2.2rem, 5vw, 5.4rem);
+        line-height: 1;
+      }
+
+      .section-header p {
+        max-width: 760px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.08rem;
+      }
+
+      .dark .section-header p,
+      .dark p,
+      .dark li {
+        color: rgba(247, 245, 240, 0.74);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .panel {
+        min-height: 190px;
+        padding: 22px;
+        background: rgba(255, 255, 255, 0.56);
+        border: 1px solid var(--line-light);
+        border-radius: 8px;
+      }
+
+      .dark .panel {
+        background: rgba(9, 10, 11, 0.34);
+        border-color: var(--line-dark);
+      }
+
+      .panel h3 {
+        margin: 10px 0 10px;
+        font-size: 1.52rem;
+      }
+
+      .panel p,
+      .panel ul {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .panel ul {
+        display: grid;
+        gap: 8px;
+        padding-left: 18px;
+      }
+
+      .quote-band {
+        padding: clamp(40px, 7vw, 88px) clamp(24px, 7vw, 96px);
+        color: var(--paper);
+        background: var(--obsidian);
+      }
+
+      blockquote {
+        max-width: 980px;
+        margin: 0;
+        font-size: clamp(2.4rem, 6vw, 6.2rem);
+        line-height: 0.98;
+      }
+
+      .palette {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        border: 1px solid var(--line-light);
+      }
+
+      .swatch {
+        min-height: 220px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        border-right: 1px solid rgba(255, 255, 255, 0.18);
+      }
+
+      .swatch:last-child {
+        border-right: 0;
+      }
+
+      .swatch strong,
+      .swatch span {
+        display: block;
+      }
+
+      .swatch span {
+        margin-top: 5px;
+        font-size: 0.85rem;
+        opacity: 0.76;
+      }
+
+      .obsidian,
+      .charcoal,
+      .red,
+      .graphite {
+        color: var(--paper);
+      }
+
+      .obsidian {
+        background: var(--obsidian);
+      }
+
+      .charcoal {
+        background: var(--charcoal);
+      }
+
+      .ivory {
+        background: var(--ivory);
+      }
+
+      .gold {
+        background: var(--gold);
+      }
+
+      .red {
+        background: var(--red);
+      }
+
+      .titanium {
+        background: var(--titanium);
+      }
+
+      .logo-stage {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 16px;
+      }
+
+      .logo-tile {
+        display: grid;
+        place-items: center;
+        min-height: 270px;
+        padding: 24px;
+        border: 1px solid var(--line-light);
+      }
+
+      .logo-tile.dark-bg {
+        background: var(--obsidian);
+        border-color: var(--line-dark);
+      }
+
+      .logo-tile.light-bg {
+        background: var(--paper);
+      }
+
+      .logo-tile img {
+        max-width: min(420px, 100%);
+        height: auto;
+      }
+
+      .type-demo {
+        display: grid;
+        gap: 18px;
+      }
+
+      .display-type {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(3rem, 7vw, 7rem);
+        line-height: 0.95;
+      }
+
+      .sans-type {
+        max-width: 700px;
+        font-size: 1.08rem;
+      }
+
+      .utility-type {
+        color: var(--red);
+        font-size: 0.9rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .application {
+        display: grid;
+        grid-template-columns: minmax(0, 0.75fr) minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      .ad-sample {
+        min-height: 560px;
+        padding: 32px;
+        color: var(--paper);
+        background: var(--obsidian);
+        border: 1px solid var(--line-dark);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .ad-sample img {
+        width: min(260px, 78%);
+        padding: 12px;
+        background: var(--paper);
+      }
+
+      .ad-sample h3 {
+        max-width: 540px;
+        margin: 24px 0 12px;
+        font-size: clamp(2.6rem, 6vw, 5.5rem);
+        line-height: 0.96;
+      }
+
+      .ad-sample p {
+        max-width: 440px;
+        color: rgba(247, 245, 240, 0.72);
+      }
+
+      .cta {
+        display: inline-flex;
+        width: max-content;
+        min-height: 44px;
+        align-items: center;
+        padding: 0 18px;
+        color: #fff;
+        background: var(--red);
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .checklist {
+        columns: 2;
+        column-gap: 42px;
+      }
+
+      .checklist li {
+        margin: 0 0 12px;
+        break-inside: avoid;
+      }
+
+      @media (max-width: 920px) {
+        .hero,
+        .section-header,
+        .logo-stage,
+        .application {
+          grid-template-columns: 1fr;
+        }
+
+        .grid,
+        .palette {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .checklist {
+          columns: 1;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .grid,
+        .palette {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          min-height: auto;
+        }
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+
+        .hero,
+        .section,
+        .quote-band {
+          break-inside: avoid;
+          min-height: auto;
+          padding: 0.55in;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="brand-book">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Brand book v1.1</div>
+          <h1>Private automotive concierge.</h1>
+          <div class="rule"></div>
+          <p>
+            Pascucci Prestige gives San Antonio clients seamless access to a curated fleet of luxury and exotic
+            vehicles, delivered with concierge-level service and private-client polish.
+          </p>
+        </div>
+        <img class="hero-logo" src="src/assets/pp-logo-grad.png" alt="Pascucci Prestige logo" />
+      </section>
+
+      <section class="quote-band">
+        <div class="eyebrow">Core standard</div>
+        <blockquote>Drive beyond ordinary. Exotic without the friction.</blockquote>
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <h2>Brand Essence</h2>
+          <p>
+            The brand balances performance and prestige: sculptural vehicles, controlled motion, editorial space,
+            concierge service, and quiet confidence.
+          </p>
+        </div>
+        <div class="grid">
+          <article class="panel">
+            <div class="label">Position</div>
+            <h3>Luxury access, privately handled.</h3>
+            <p>Not a rental counter. Not a dealership. A controlled, high-touch service for curated vehicle access.</p>
+          </article>
+          <article class="panel">
+            <div class="label">Client Need</div>
+            <h3>Special without complicated.</h3>
+            <p>The experience should feel memorable while the process stays clear, fast, and handled.</p>
+          </article>
+          <article class="panel">
+            <div class="label">Personality</div>
+            <h3>Bold, discreet, precise.</h3>
+            <p>Confident language, refined visuals, and service details that build trust before the drive begins.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section dark">
+        <div class="section-header">
+          <h2>Logo System</h2>
+          <p>
+            The complete logo remains the primary brand identifier. Preserve the gold speed mark, silver car
+            silhouette, gold wordmark, and Prestige descriptor as a controlled lockup.
+          </p>
+        </div>
+        <div class="logo-stage">
+          <div class="logo-tile dark-bg">
+            <img src="src/assets/pp-logo-grad.png" alt="Pascucci Prestige logo on dark background" />
+          </div>
+          <div class="logo-tile light-bg">
+            <img src="src/assets/pp-logo-grad.png" alt="Pascucci Prestige logo on light background" />
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <h2>Color</h2>
+          <p>
+            Black and ivory carry the system. Gold is premium emphasis. Red is a controlled performance signal.
+            Titanium and graphite connect the palette to the metallic logo and vehicle language.
+          </p>
+        </div>
+        <div class="palette">
+          <div class="swatch obsidian"><strong>Obsidian</strong><span>#090A0B</span></div>
+          <div class="swatch charcoal"><strong>Carbon</strong><span>#202225</span></div>
+          <div class="swatch ivory"><strong>Warm Ivory</strong><span>#F1EEE7</span></div>
+          <div class="swatch gold"><strong>Champagne Gold</strong><span>#B89A63</span></div>
+          <div class="swatch red"><strong>Racing Red</strong><span>#A7191F</span></div>
+          <div class="swatch titanium"><strong>Titanium</strong><span>#8C9094</span></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <h2>Typography</h2>
+          <p>
+            Use serif type for prestige and emotion, sans serif for clarity and service, and condensed utility type
+            for details such as rates, dates, locations, and vehicle specifications.
+          </p>
+        </div>
+        <div class="type-demo">
+          <div class="utility-type">Luxury Auto Concierge</div>
+          <div class="display-type">Arrive with intention.</div>
+          <p class="sans-type">
+            Your vehicle will be delivered to Hotel Emma at 4:00 PM, detailed and ready for your arrival.
+          </p>
+        </div>
+      </section>
+
+      <section class="section dark">
+        <div class="section-header">
+          <h2>Visual Direction</h2>
+          <p>
+            Photography should be cinematic, architectural, and premium. Let the vehicle dominate, keep human presence
+            calm and professional, and use San Antonio references with restraint.
+          </p>
+        </div>
+        <div class="grid">
+          <article class="panel">
+            <div class="label">Use</div>
+            <h3>Vehicle-led scenes.</h3>
+            <ul>
+              <li>Low-angle three-quarter vehicle views</li>
+              <li>Hotel, airport, and residential delivery</li>
+              <li>Wet pavement, controlled highlights, detail crops</li>
+            </ul>
+          </article>
+          <article class="panel">
+            <div class="label">People</div>
+            <h3>Secondary and composed.</h3>
+            <ul>
+              <li>Well dressed, calm, and professional</li>
+              <li>Natural concierge handoffs</li>
+              <li>No exaggerated poses or wealth cliches</li>
+            </ul>
+          </article>
+          <article class="panel">
+            <div class="label">Avoid</div>
+            <h3>No rental-counter energy.</h3>
+            <ul>
+              <li>Dealership lots and white-background inventory</li>
+              <li>Nightclub neon and extreme HDR</li>
+              <li>Cash, cigars, champagne, or unsafe driving</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <h2>Application</h2>
+          <p>
+            Campaigns should focus on access, arrival, and personal service. Copy should stay short and controlled.
+          </p>
+        </div>
+        <div class="application">
+          <div class="ad-sample">
+            <img src="src/assets/pp-logo-grad.png" alt="Pascucci Prestige logo" />
+            <div>
+              <div class="label">Launch Campaign</div>
+              <h3>San Antonio, meet your next obsession.</h3>
+              <p>A curated fleet of luxury and exotic vehicles, delivered with concierge-level service.</p>
+            </div>
+            <span class="cta">Explore the Fleet</span>
+          </div>
+          <div class="grid">
+            <article class="panel">
+              <div class="label">Concierge</div>
+              <h3>Your vehicle. Your schedule. Your arrival.</h3>
+              <p>Hotel, airport, residential, and special-event delivery throughout San Antonio.</p>
+            </article>
+            <article class="panel">
+              <div class="label">Weekend</div>
+              <h3>Change the pace of your weekend.</h3>
+              <p>Reserve a luxury or exotic vehicle for your next escape, celebration, or arrival.</p>
+            </article>
+            <article class="panel">
+              <div class="label">Corporate</div>
+              <h3>Arrive with intention.</h3>
+              <p>Premium vehicle access for executive travel, client hospitality, and corporate events.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section dark">
+        <div class="section-header">
+          <h2>Quality Checklist</h2>
+          <p>
+            Every piece should reinforce a private, polished experience for exceptional vehicles.
+          </p>
+        </div>
+        <ul class="checklist">
+          <li>Does the vehicle or concierge service feel like the hero?</li>
+          <li>Is the tone confident without being loud?</li>
+          <li>Is gold used with restraint?</li>
+          <li>Is red used only as a signal or CTA?</li>
+          <li>Is the logo legible with enough clear space?</li>
+          <li>Does the layout feel spacious and controlled?</li>
+          <li>Is the copy specific, short, and service-oriented?</li>
+          <li>Does the work avoid dealership, discount, and influencer luxury cues?</li>
+          <li>Are all important details readable on mobile and in print?</li>
+          <li>Does the piece reinforce exotic access without friction?</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

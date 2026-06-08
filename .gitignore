@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.tsbuildinfo
+qa-*.png
+qa-final-*.png
+.env
+.env.*
+!.env.example
