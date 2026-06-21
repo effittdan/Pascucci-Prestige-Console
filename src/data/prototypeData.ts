@@ -92,10 +92,10 @@ export const navItems: NavItem[] = [
 ];
 
 export const metricCards = [
-  { label: "Departures", value: "4", detail: "2 awaiting final readiness", tone: "warning" },
-  { label: "Returns", value: "3", detail: "1 inspection incomplete", tone: "pending" },
-  { label: "Open leads", value: "12", detail: "5 new since yesterday", tone: "complete" },
-  { label: "Blocked vehicles", value: "2", detail: "maintenance or incident hold", tone: "blocked" },
+  { label: "Fleet vehicles", value: "3", detail: "All vehicle records published", tone: "complete" },
+  { label: "Active rentals", value: "0", detail: "No live reservations", tone: "pending" },
+  { label: "Customer records", value: "0", detail: "Ready for first intake", tone: "pending" },
+  { label: "Open tasks", value: "0", detail: "Operations queue is clear", tone: "complete" },
 ];
 
 export const readinessItems: { label: string; state: ReadinessState; detail: string }[] = [
@@ -108,57 +108,22 @@ export const readinessItems: { label: string; state: ReadinessState; detail: str
   { label: "Delivery", state: "overridden", detail: "Owner approved hotel handoff" },
 ];
 
-export const timelineEvents = [
-  {
-    time: "8:30 AM",
-    activity: "Delivery",
-    vehicle: "Lamborghini Urus",
-    customer: "Avery Stone",
-    location: "Hotel Emma",
-    owner: "Theresa",
-    status: "Operations warning",
-  },
-  {
-    time: "10:00 AM",
-    activity: "Return",
-    vehicle: "McLaren GT",
-    customer: "Miles Carter",
-    location: "SAT private arrivals",
-    owner: "Dan",
-    status: "On track",
-  },
-  {
-    time: "1:15 PM",
-    activity: "Prep",
-    vehicle: "Porsche 911 Cabriolet",
-    customer: "Natalie Reyes",
-    location: "North showroom",
-    owner: "Rosie",
-    status: "Needs documents",
-  },
-  {
-    time: "4:00 PM",
-    activity: "Delivery",
-    vehicle: "Lamborghini Urus",
-    customer: "Bennett Group",
-    location: "Pearl District",
-    owner: "Contract driver",
-    status: "Ready",
-  },
-];
+export const timelineEvents: Array<{
+  time: string;
+  activity: string;
+  vehicle: string;
+  customer: string;
+  location: string;
+  owner: string;
+  status: string;
+}> = [];
 
-export const attentionQueue = [
-  { label: "Insurance document expires before return", entity: "PP-R-2026-00042", severity: "Blocked" },
-  { label: "Delivery assignment has no confirmed driver", entity: "Urus at Hotel Emma", severity: "Warning" },
-  { label: "Agreement viewed but not signed", entity: "Natalie Reyes", severity: "Pending" },
-  { label: "Return inspection photos unsynced", entity: "McLaren GT return", severity: "Warning" },
-  { label: "Security authorization release due", entity: "PP-R-2026-00037", severity: "Finance" },
-];
+export const attentionQueue: Array<{ label: string; entity: string; severity: string }> = [];
 
 export const vehicles = [
-  { name: "Lamborghini Urus", plate: "PP-URUS", status: "Staged", next: "Delivery 8:30 AM", revenue: "$4,850", readiness: 91 },
-  { name: "McLaren GT", plate: "PP-MCL", status: "Active rental", next: "Return 10:00 AM", revenue: "$3,200", readiness: 84 },
-  { name: "Porsche 911 Cabriolet", plate: "PP-911", status: "Preparing", next: "Inspection 12:45 PM", revenue: "$2,775", readiness: 67 },
+  { name: "McLaren GT", plate: "PP-MCL", status: "Available", next: "No reservation assigned", readiness: 100 },
+  { name: "Lamborghini Urus", plate: "PP-URUS", status: "Available", next: "No reservation assigned", readiness: 100 },
+  { name: "Porsche 911 Cabriolet", plate: "PP-911", status: "Available", next: "No reservation assigned", readiness: 100 },
 ];
 
 export type FleetManagerVehicle = {
@@ -360,91 +325,52 @@ export type ClientIntakeProfile = {
   nextAction: string;
 };
 
-export const clientIntakeProfiles: ClientIntakeProfile[] = [
-  {
-    id: "CLI-2026-0188",
-    name: "Maya Ellison",
-    stage: "Profile started",
-    source: "iPad showroom intake",
-    preferredVehicle: "Porsche 911 Cabriolet",
-    tripWindow: "Weekend rental",
-    profileCompleteness: 62,
-    paymentStatus: "Setup link pending",
-    squareCustomer: "Will create on submit",
-    savedPayment: "None saved",
-    nextAction: "Collect license and payment preference",
-  },
-  {
-    id: "CLI-2026-0184",
-    name: "Julian Reed",
-    stage: "Payment ready",
-    source: "Concierge referral",
-    preferredVehicle: "Lamborghini Urus",
-    tripWindow: "Jun 22-24",
-    profileCompleteness: 86,
-    paymentStatus: "Payment method saved",
-    squareCustomer: "SQ-CUST-0184",
-    savedPayment: "Visa ending in 4242",
-    nextAction: "Send approved reservation payment request",
-  },
-  {
-    id: "CLI-2026-0179",
-    name: "Bennett Group",
-    stage: "Documents needed",
-    source: "Website inquiry",
-    preferredVehicle: "McLaren GT",
-    tripWindow: "Corporate arrival",
-    profileCompleteness: 48,
-    paymentStatus: "No payment preference",
-    squareCustomer: "Not created",
-    savedPayment: "None saved",
-    nextAction: "Request driver roster and insurance",
-  },
-];
+export const clientIntakeProfiles: ClientIntakeProfile[] = [];
 
 export const intakeProfileRequirements = [
   "Contact details and preferred communication",
   "Primary renter identity",
   "Driver license and insurance uploads",
   "Rental purpose, location, and vehicle interest",
-  "Payment consent and Square customer setup",
+  "Internal approval and risk review",
   "Approval status for future rentals",
 ];
 
 export const intakePaymentBlueprint = [
-  "Create or reuse a Square Customer for each approved renter",
-  "Collect remotely with Square Web Payments or in person with Square Terminal",
-  "Store only Square IDs, brand, last four, consent timestamp, and status",
-  "Use the approved card on file for future authorized reservation requests",
-  "Keep the $500 security authorization separate from rental charges",
+  "Keep customer intake usable before a payment provider is connected",
+  "Add the provider only behind authenticated server functions",
+  "Store provider references instead of sensitive payment credentials",
+  "Keep security authorization separate from rental charges",
+  "Audit every future payment, refund, and authorization event",
 ];
 
 export const ipadIntakeSteps = [
   { label: "Profile", detail: "Name, phone, email, address, and preferred contact." },
   { label: "Rental", detail: "Vehicle interest, date window, delivery location, and occasion." },
   { label: "Documents", detail: "License, insurance, additional drivers, and approval notes." },
-  { label: "Payment", detail: "Square setup link, card on file, or in-person Terminal payment with explicit consent." },
+  { label: "Approval", detail: "Concierge review, driver eligibility, insurance, and internal service notes." },
   { label: "Review", detail: "Concierge review before profile becomes approved for reservations." },
 ];
 
-export const reservations = [
-  { id: "PP-R-2026-00042", customer: "Avery Stone", vehicle: "Lamborghini Urus", status: "Pending approval", total: "$4,850", dates: "Jun 8-11", issue: "Document blocked" },
-  { id: "PP-R-2026-00043", customer: "Bennett Group", vehicle: "McLaren GT", status: "Confirmed", total: "$2,150", dates: "Jun 8-9", issue: "Ready" },
-  { id: "PP-R-2026-00044", customer: "Natalie Reyes", vehicle: "Porsche 911 Cabriolet", status: "Quote accepted", total: "$2,775", dates: "Jun 9-12", issue: "Agreement pending" },
-];
+export const reservations: Array<{
+  id: string;
+  customer: string;
+  vehicle: string;
+  status: string;
+  total: string;
+  dates: string;
+  issue: string;
+}> = [];
 
-export const tasks = [
-  { title: "Confirm hotel delivery contact", type: "Delivery", due: "7:45 AM", assignee: "Theresa", status: "In progress" },
-  { title: "Review updated insurance card", type: "Document review", due: "9:00 AM", assignee: "Rosie", status: "Blocked" },
-  { title: "Capture return mileage and dashboard", type: "Inspection", due: "10:15 AM", assignee: "Dan", status: "Open" },
-  { title: "Prep McLaren accessories kit", type: "Vehicle prep", due: "2:30 PM", assignee: "Mark Motors", status: "Open" },
-];
+export const tasks: Array<{
+  title: string;
+  type: string;
+  due: string;
+  assignee: string;
+  status: string;
+}> = [];
 
-export const auditEvents = [
-  { action: "Role assigned", actor: "Jerry", entity: "Theresa", time: "7:11 AM" },
-  { action: "Override approved", actor: "Jerry", entity: "PP-R-2026-00042", time: "7:34 AM" },
-  { action: "Status transition", actor: "Dan", entity: "PP-R-2026-00043", time: "8:02 AM" },
-];
+export const auditEvents: Array<{ action: string; actor: string; entity: string; time: string }> = [];
 
 export const serviceBoundaries = [
   "Reservation service",
@@ -499,70 +425,13 @@ export type ComparisonPair = {
 };
 
 export const inspectionMetrics = [
-  { label: "Due today", value: "7", detail: "4 checkout, 3 return" },
-  { label: "Photo zones open", value: "18", detail: "Across active inspections" },
-  { label: "Acknowledgments", value: "2", detail: "Customer review pending" },
-  { label: "Manager reviews", value: "3", detail: "Possible damage flags" },
+  { label: "Due today", value: "0", detail: "No inspections scheduled" },
+  { label: "Photo zones open", value: "0", detail: "No active inspections" },
+  { label: "Acknowledgments", value: "0", detail: "Nothing awaiting review" },
+  { label: "Manager reviews", value: "0", detail: "No damage flags" },
 ];
 
-export const inspectionQueue: InspectionQueueItem[] = [
-  {
-    id: "INS-2026-0142",
-    reservation: "PP-R-2026-00042",
-    customer: "Avery Stone",
-    vehicle: "Lamborghini Urus",
-    type: "Checkout",
-    status: "In progress",
-    damageReview: "Not required",
-    due: "8:15 AM",
-    assignedTo: "Theresa",
-    requiredPhotos: 30,
-    completedPhotos: 22,
-    note: "Exterior complete. Interior, keys, and fuel display remain.",
-  },
-  {
-    id: "INS-2026-0139",
-    reservation: "PP-R-2026-00038",
-    customer: "Miles Carter",
-    vehicle: "McLaren GT",
-    type: "Return",
-    status: "Under review",
-    damageReview: "Possible change",
-    due: "10:15 AM",
-    assignedTo: "Dan",
-    requiredPhotos: 30,
-    completedPhotos: 30,
-    note: "Passenger rear wheel flag needs manager decision.",
-  },
-  {
-    id: "INS-2026-0145",
-    reservation: "PP-R-2026-00043",
-    customer: "Bennett Group",
-    vehicle: "Porsche 911 Cabriolet",
-    type: "Checkout",
-    status: "Awaiting acknowledgment",
-    damageReview: "Not required",
-    due: "3:30 PM",
-    assignedTo: "Rosie",
-    requiredPhotos: 30,
-    completedPhotos: 30,
-    note: "Customer link sent. Internal report is locked.",
-  },
-  {
-    id: "INS-2026-0148",
-    reservation: "PP-R-2026-00047",
-    customer: "Sofia Nguyen",
-    vehicle: "Lamborghini Urus",
-    type: "Return",
-    status: "Draft",
-    damageReview: "Pending",
-    due: "5:00 PM",
-    assignedTo: "Mark",
-    requiredPhotos: 30,
-    completedPhotos: 4,
-    note: "Return photos started after airport pickup.",
-  },
-];
+export const inspectionQueue: InspectionQueueItem[] = [];
 
 export const inspectionZones: InspectionZone[] = [
   { code: "front", label: "Front straight-on", group: "Exterior", required: true, complete: true, quality: "Ready" },

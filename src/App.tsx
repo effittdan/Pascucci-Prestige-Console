@@ -1,31 +1,30 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import type { ReactNode } from "react";
 import {
-  ArrowRight,
   Bell,
   Check,
   ChevronDown,
-  Clock3,
   Command,
-  CreditCard,
+  Download,
   Eye,
   FileWarning,
   GaugeCircle,
   Image,
-  MapPin,
   Menu,
   Plus,
-  ReceiptText,
   Search,
   Shield,
   Signature,
   SlidersHorizontal,
-  Store,
+  Wifi,
+  WifiOff,
   X,
 } from "lucide-react";
 import logoUrl from "./assets/pp-logo-grad.png";
+import { createFleetVehicle, loadFleet, saveFleetVehicle } from "./lib/fleetRepository";
+import { usePersistentState } from "./usePersistentState";
 import {
-  attentionQueue,
   auditEvents,
   clientIntakeProfiles,
   comparisonPairs,
@@ -41,15 +40,20 @@ import {
   metricCards,
   ModuleId,
   navItems,
-  readinessItems,
   reservations,
   Role,
   roles,
   securityPrinciples,
   serviceBoundaries,
   tasks,
-  timelineEvents,
   vehicles,
+} from "./data/prototypeData";
+import type {
+  ClientIntakeProfile,
+  ClientIntakeStage,
+  FleetManagerVehicle,
+  InspectionQueueItem,
+  InspectionZone,
 } from "./data/prototypeData";
 
 const moduleTitles: Record<ModuleId, { title: string; kicker: string }> = {
@@ -76,6 +80,7 @@ export function App() {
   const [role, setRole] = useState<Role>("owner_admin");
   const [activeModule, setActiveModule] = useState<ModuleId>("today");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [globalSearch, setGlobalSearch] = useState("");
 
   const visibleNav = useMemo(
     () => navItems.filter((item) => item.roles.includes(role)),
@@ -134,22 +139,81 @@ export function App() {
             <h1>{activeMeta.title}</h1>
           </div>
           <div className="top-actions">
+            <PwaControls />
             <div className="search-control">
               <Search size={16} />
-              <input aria-label="Search" placeholder="Search reservations, vehicles" />
+              <input
+                aria-label="Search"
+                placeholder="Search this module"
+                value={globalSearch}
+                onChange={(event) => setGlobalSearch(event.target.value)}
+              />
             </div>
             <button className="icon-button" aria-label="Notifications">
               <Bell size={18} />
             </button>
-            <button className="primary-action">
+            <button
+              className="primary-action"
+              onClick={() => window.dispatchEvent(new CustomEvent("prestige:new-record", { detail: activeModule }))}
+            >
               <Plus size={17} />
               <span>New</span>
             </button>
           </div>
         </header>
 
-        {activeModule === "today" ? <TodayView /> : <ModuleView moduleId={activeModule} role={role} />}
+        {activeModule === "today" ? <TodayView /> : <ModuleView moduleId={activeModule} role={role} search={globalSearch} />}
       </main>
+    </div>
+  );
+}
+
+type InstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+};
+
+function PwaControls() {
+  const [online, setOnline] = useState(navigator.onLine);
+  const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
+
+  useEffect(() => {
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+    const handleInstall = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event as InstallPromptEvent);
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("beforeinstallprompt", handleInstall);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("beforeinstallprompt", handleInstall);
+    };
+  }, []);
+
+  const install = async () => {
+    if (!installPrompt) return;
+    await installPrompt.prompt();
+    await installPrompt.userChoice;
+    setInstallPrompt(null);
+  };
+
+  return (
+    <div className="pwa-controls">
+      <span className={cx("connection-status", !online && "offline")}>
+        {online ? <Wifi size={14} /> : <WifiOff size={14} />}
+        {online ? "Online" : "Offline"}
+      </span>
+      {installPrompt && (
+        <button className="install-action" onClick={install}>
+          <Download size={15} />
+          Install
+        </button>
+      )}
     </div>
   );
 }
@@ -170,24 +234,27 @@ function RoleSelect({ role, setRole }: { role: Role; setRole: (role: Role) => vo
 }
 
 function TodayView() {
+  const todayLabel = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(new Date());
+
   return (
     <div className="content-grid">
       <section className="hero-panel">
         <div>
-          <span className="eyebrow">Monday, June 8</span>
-          <h2>Exceptional vehicles, controlled movement.</h2>
+          <span className="eyebrow">{todayLabel}</span>
+          <h2>Your launch workspace is clean and ready.</h2>
           <p>
-            Four departures, three returns, and one reservation blocked by document readiness.
-            The day is manageable, but the Urus handoff needs attention before 8:30 AM.
+            The three-vehicle fleet is published. Customers, reservations, tasks, and inspections
+            will appear here only after your team creates real records.
           </p>
         </div>
         <div className="hero-status">
-          <span>Readiness focus</span>
-          <strong>PP-R-2026-00042</strong>
-          <button>
-            Open workspace
-            <ArrowRight size={16} />
-          </button>
+          <span>Launch status</span>
+          <strong>Operational baseline ready</strong>
+          <StatusPill label="Clean workspace" />
         </div>
       </section>
 
@@ -201,67 +268,12 @@ function TodayView() {
         ))}
       </section>
 
-      <section className="panel timeline-panel">
-        <PanelHeader title="Operational Timeline" action="Dispatch view" />
-        <div className="timeline">
-          {timelineEvents.map((event) => (
-            <article className="timeline-item" key={`${event.time}-${event.vehicle}`}>
-              <time>{event.time}</time>
-              <div>
-                <strong>{event.activity}</strong>
-                <span>{event.vehicle}</span>
-              </div>
-              <div>
-                <strong>{event.customer}</strong>
-                <span>{event.location}</span>
-              </div>
-              <div>
-                <strong>{event.owner}</strong>
-                <StatusPill label={event.status} />
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="panel attention-panel">
-        <PanelHeader title="Attention Queue" action="Resolve" />
-        <div className="attention-list">
-          {attentionQueue.map((item) => (
-            <article className="attention-item" key={item.label}>
-              <FileWarning size={18} />
-              <div>
-                <strong>{item.label}</strong>
-                <span>{item.entity}</span>
-              </div>
-              <SeverityBadge label={item.severity} />
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="panel reservation-workspace">
-        <PanelHeader title="Reservation Workspace" action="Transition" />
-        <div className="workspace-header">
-          <div>
-            <span className="mini-label">PP-R-2026-00042</span>
-            <h3>Avery Stone · Lamborghini Urus</h3>
-          </div>
-          <button className="secondary-action">
-            Request approval
-            <ArrowRight size={15} />
-          </button>
-        </div>
-        <div className="readiness-strip">
-          {readinessItems.map((item) => (
-            <article className={cx("readiness-item", item.state)} key={item.label}>
-              <div className="readiness-dot">
-                {item.state === "complete" ? <Check size={13} /> : <Clock3 size={13} />}
-              </div>
-              <strong>{item.label}</strong>
-              <span>{item.detail}</span>
-            </article>
-          ))}
+      <section className="panel launch-empty-panel">
+        <PanelHeader title="Operations" action="No demo records" />
+        <div className="module-empty">
+          <Command size={30} />
+          <h2>Nothing artificial in the queue.</h2>
+          <p>Create the first customer, reservation, task, or inspection when real activity begins.</p>
         </div>
       </section>
 
@@ -281,7 +293,7 @@ function TodayView() {
                   <i style={{ width: `${vehicle.readiness}%` }} />
                 </div>
               </div>
-              <strong>{vehicle.revenue}</strong>
+              <strong>Ready</strong>
             </article>
           ))}
         </div>
@@ -290,13 +302,13 @@ function TodayView() {
   );
 }
 
-function ModuleView({ moduleId, role }: { moduleId: ModuleId; role: Role }) {
+function ModuleView({ moduleId, role, search }: { moduleId: ModuleId; role: Role; search: string }) {
   const meta = moduleTitles[moduleId];
 
   if (moduleId === "reservations") {
     return (
       <StandardLayout
-        left={<ReservationList />}
+        left={<ReservationList search={search} />}
         right={<FutureFoundation role={role} />}
       />
     );
@@ -305,28 +317,28 @@ function ModuleView({ moduleId, role }: { moduleId: ModuleId; role: Role }) {
   if (moduleId === "fleet") {
     return (
       <StandardLayout
-        left={<FleetTable />}
+        left={<FleetTable search={search} />}
         right={<FutureFoundation role={role} />}
       />
     );
   }
 
   if (moduleId === "customers" || moduleId === "leads") {
-    return <ClientIntakeCommandCenter moduleId={moduleId} />;
+    return <ClientIntakeCommandCenter moduleId={moduleId} search={search} />;
   }
 
   if (moduleId === "finance") {
-    return <SquareFinanceCommandCenter />;
+    return <DeferredFinanceView />;
   }
 
   if (moduleId === "operations" || moduleId === "inspections") {
     if (moduleId === "inspections") {
-      return <InspectionCommandCenter />;
+      return <InspectionCommandCenter search={search} />;
     }
 
     return (
       <StandardLayout
-        left={<TaskBoard inspection={false} />}
+        left={<TaskBoard inspection={false} search={search} />}
         right={<MobileInspectionCard />}
       />
     );
@@ -362,9 +374,72 @@ function ModuleView({ moduleId, role }: { moduleId: ModuleId; role: Role }) {
   );
 }
 
-function InspectionCommandCenter() {
-  const activeInspection = inspectionQueue[0];
-  const reviewInspection = inspectionQueue.find((item) => item.damageReview === "Possible change");
+function InspectionCommandCenter({ search }: { search: string }) {
+  const [queue, setQueue] = usePersistentState<InspectionQueueItem[]>("prestige:launch:inspections", inspectionQueue);
+  const [zones, setZones] = usePersistentState<InspectionZone[]>("prestige:launch:inspection-zones", inspectionZones);
+  const [activeInspectionId, setActiveInspectionId] = useState(queue[0]?.id ?? "");
+  const activeInspection = queue.find((item) => item.id === activeInspectionId) ?? queue[0];
+  const reviewInspection = queue.find((item) => item.damageReview === "Possible change");
+  const visibleQueue = queue.filter((item) =>
+    `${item.id} ${item.vehicle} ${item.customer} ${item.reservation}`.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  if (!activeInspection) {
+    return (
+      <div className="inspection-layout">
+        <section className="inspection-brief">
+          <div>
+            <span className="eyebrow">Vehicle condition inspections</span>
+            <h2>Inspection workflows are ready for the first real reservation.</h2>
+            <p>No demo inspection records or fictional damage reports are loaded.</p>
+          </div>
+        </section>
+        <section className="inspection-metrics" aria-label="Inspection overview">
+          {inspectionMetrics.map((metric) => (
+            <article className="inspection-metric" key={metric.label}>
+              <span>{metric.label}</span>
+              <strong>{metric.value}</strong>
+              <p>{metric.detail}</p>
+            </article>
+          ))}
+        </section>
+        <section className="panel launch-empty-panel">
+          <div className="module-empty">
+            <FileWarning size={30} />
+            <h2>No inspections yet</h2>
+            <p>Checkout and return inspections will be created from live reservations.</p>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  const toggleZone = (code: string) => {
+    const nextZones = zones.map((zone) =>
+      zone.code === code
+        ? { ...zone, complete: !zone.complete, quality: !zone.complete ? "Ready" as const : "Missing" as const }
+        : zone,
+    );
+    setZones(nextZones);
+    const completedPhotos = Math.min(
+      activeInspection.requiredPhotos,
+      Math.round((nextZones.filter((zone) => zone.complete).length / nextZones.length) * activeInspection.requiredPhotos),
+    );
+    setQueue(queue.map((item) =>
+      item.id === activeInspection.id
+        ? { ...item, completedPhotos, status: completedPhotos === item.requiredPhotos ? "Awaiting acknowledgment" : "In progress" }
+        : item,
+    ));
+  };
+
+  const completeInspection = () => {
+    setZones(zones.map((zone) => ({ ...zone, complete: true, quality: "Ready" })));
+    setQueue(queue.map((item) =>
+      item.id === activeInspection.id
+        ? { ...item, completedPhotos: item.requiredPhotos, status: "Awaiting acknowledgment", note: "Capture complete. Customer acknowledgment is ready." }
+        : item,
+    ));
+  };
 
   return (
     <div className="inspection-layout">
@@ -406,8 +481,12 @@ function InspectionCommandCenter() {
       <section className="panel inspection-queue-panel">
         <PanelHeader title="Inspection Queue" action="Filter" />
         <div className="inspection-queue">
-          {inspectionQueue.map((item) => (
-            <article className="inspection-row" key={item.id}>
+          {visibleQueue.map((item) => (
+            <article
+              className={cx("inspection-row", item.id === activeInspection.id && "selected-record")}
+              key={item.id}
+              onClick={() => setActiveInspectionId(item.id)}
+            >
               <div>
                 <span className="mini-label">{item.id} · {item.type}</span>
                 <h3>{item.vehicle}</h3>
@@ -441,19 +520,23 @@ function InspectionCommandCenter() {
           <StatusPill label={activeInspection.status} />
         </div>
         <div className="zone-list">
-          {inspectionZones.map((zone, index) => (
+          {zones.map((zone, index) => (
             <article className={cx("zone-row", zone.complete && "complete", zone.quality === "Needs retake" && "warning")} key={zone.code}>
               <span>{index + 1}</span>
               <div>
                 <strong>{zone.label}</strong>
                 <p>{zone.group} · {zone.required ? "Required" : "Optional"} · {zone.quality}</p>
               </div>
-              <button aria-label={`${zone.complete ? "Review" : "Capture"} ${zone.label}`}>
+              <button onClick={() => toggleZone(zone.code)} aria-label={`${zone.complete ? "Reset" : "Capture"} ${zone.label}`}>
                 {zone.complete ? <Eye size={16} /> : <Image size={16} />}
               </button>
             </article>
           ))}
         </div>
+        <button className="primary-action full-width-action" onClick={completeInspection}>
+          <Check size={17} />
+          Complete required capture
+        </button>
       </section>
 
       <section className="panel comparison-panel">
@@ -546,13 +629,81 @@ function StandardLayout({ left, right }: { left: ReactNode; right: ReactNode }) 
   );
 }
 
-function ReservationList() {
+type ReservationRecord = (typeof reservations)[number];
+
+const reservationTransitions: Record<string, string> = {
+  "Quote accepted": "Pending approval",
+  "Pending approval": "Confirmed",
+  Confirmed: "Preparation",
+  Preparation: "Ready for departure",
+  "Ready for departure": "Active",
+  Active: "Return pending",
+  "Return pending": "Completed",
+};
+
+function ReservationList({ search }: { search: string }) {
+  const [records, setRecords] = usePersistentState<ReservationRecord[]>("prestige:launch:reservations", reservations);
+  const [selectedId, setSelectedId] = useState(records[0]?.id ?? "");
+  const [showForm, setShowForm] = useState(false);
+  const selected = records.find((record) => record.id === selectedId) ?? records[0];
+  const visibleRecords = records.filter((record) =>
+    `${record.id} ${record.customer} ${record.vehicle} ${record.status}`.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  useEffect(() => {
+    const open = (event: Event) => {
+      if ((event as CustomEvent).detail === "reservations") setShowForm(true);
+    };
+    window.addEventListener("prestige:new-record", open);
+    return () => window.removeEventListener("prestige:new-record", open);
+  }, []);
+
+  const createReservation = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const nextNumber = String(records.length + 45).padStart(5, "0");
+    const next: ReservationRecord = {
+      id: `PP-R-2026-${nextNumber}`,
+      customer: String(form.get("customer")),
+      vehicle: String(form.get("vehicle")),
+      status: "Quote accepted",
+      total: String(form.get("total")),
+      dates: String(form.get("dates")),
+      issue: "Readiness review required",
+    };
+    setRecords([next, ...records]);
+    setSelectedId(next.id);
+    setShowForm(false);
+  };
+
+  const transition = () => {
+    if (!selected) return;
+    const nextStatus = reservationTransitions[selected.status];
+    if (!nextStatus) return;
+    setRecords(records.map((record) =>
+      record.id === selected.id
+        ? { ...record, status: nextStatus, issue: nextStatus === "Confirmed" ? "Ready" : `Moved to ${nextStatus}` }
+        : record,
+    ));
+  };
+
   return (
     <section className="panel">
-      <PanelHeader title="Reservation Pipeline" action="New reservation" />
+      <PanelHeader title="Reservation Pipeline" action="Working records" />
       <div className="record-list">
-        {reservations.map((reservation) => (
-          <article className="record-card" key={reservation.id}>
+        {visibleRecords.length === 0 && (
+          <div className="module-empty compact-empty">
+            <Command size={26} />
+            <h2>No reservations yet</h2>
+            <p>Create the first reservation after a real customer intake.</p>
+          </div>
+        )}
+        {visibleRecords.map((reservation) => (
+          <article
+            className={cx("record-card", reservation.id === selected?.id && "selected-record")}
+            key={reservation.id}
+            onClick={() => setSelectedId(reservation.id)}
+          >
             <div>
               <span className="mini-label">{reservation.id}</span>
               <h3>{reservation.customer}</h3>
@@ -566,15 +717,105 @@ function ReservationList() {
           </article>
         ))}
       </div>
+      {selected && (
+        <div className="record-action-bar">
+          <div>
+            <span className="mini-label">Selected reservation</span>
+            <strong>{selected.id} · {selected.status}</strong>
+          </div>
+          <button className="secondary-action" onClick={() => setShowForm(true)}>New reservation</button>
+          <button className="primary-action" onClick={transition} disabled={!reservationTransitions[selected.status]}>
+            {reservationTransitions[selected.status] ? `Move to ${reservationTransitions[selected.status]}` : "Lifecycle complete"}
+          </button>
+        </div>
+      )}
+      {showForm && (
+        <Modal title="Create reservation" onClose={() => setShowForm(false)}>
+          <form className="command-form" onSubmit={createReservation}>
+            <label>Customer<input name="customer" required placeholder="Customer or company" /></label>
+            <label>Vehicle<select name="vehicle">{fleetManagerVehicles.map((vehicle) => <option key={vehicle.id}>{vehicle.name}</option>)}</select></label>
+            <label>Rental window<input name="dates" required placeholder="Jun 24-27" /></label>
+            <label>Estimated total<input name="total" required placeholder="$3,500" /></label>
+            <div className="form-footer">
+              <button type="button" className="secondary-action" onClick={() => setShowForm(false)}>Cancel</button>
+              <button className="primary-action">Create draft</button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </section>
   );
 }
 
-function FleetTable() {
-  const activeVehicle = fleetManagerVehicles[0];
-  const publishedCount = fleetManagerVehicles.filter((vehicle) => vehicle.status === "Published").length;
-  const totalPhotos = fleetManagerVehicles.reduce((sum, vehicle) => sum + vehicle.photoCount, 0);
-  const totalCapacity = fleetManagerVehicles.reduce((sum, vehicle) => sum + vehicle.maxPhotos, 0);
+function FleetTable({ search }: { search: string }) {
+  const [records, setRecords] = usePersistentState<FleetManagerVehicle[]>("prestige:launch:fleet", fleetManagerVehicles);
+  const [activeId, setActiveId] = useState(records[0]?.id ?? "");
+  const [showForm, setShowForm] = useState(false);
+  const [syncState, setSyncState] = useState("Loading shared fleet");
+  const activeVehicle = records.find((vehicle) => vehicle.id === activeId) ?? records[0];
+  const visibleRecords = records.filter((vehicle) =>
+    `${vehicle.name} ${vehicle.category} ${vehicle.status}`.toLowerCase().includes(search.toLowerCase()),
+  );
+  const publishedCount = records.filter((vehicle) => vehicle.status === "Published").length;
+  const totalPhotos = records.reduce((sum, vehicle) => sum + vehicle.photoCount, 0);
+  const totalCapacity = records.reduce((sum, vehicle) => sum + vehicle.maxPhotos, 0);
+
+  useEffect(() => {
+    const open = (event: Event) => {
+      if ((event as CustomEvent).detail === "fleet") setShowForm(true);
+    };
+    window.addEventListener("prestige:new-record", open);
+    return () => window.removeEventListener("prestige:new-record", open);
+  }, []);
+
+  useEffect(() => {
+    loadFleet()
+      .then((sharedFleet) => {
+        if (sharedFleet?.length) {
+          setRecords(sharedFleet);
+          setActiveId(sharedFleet[0].id);
+          setSyncState("Synced with Supabase");
+        } else {
+          setSyncState("Local fleet");
+        }
+      })
+      .catch(() => setSyncState("Offline copy"));
+  }, [setRecords]);
+
+  const updateActive = (patch: Partial<FleetManagerVehicle>) => {
+    const updated = { ...activeVehicle, ...patch };
+    setRecords(records.map((vehicle) => vehicle.id === activeVehicle.id ? updated : vehicle));
+    setSyncState("Saving…");
+    saveFleetVehicle(updated)
+      .then(() => setSyncState("Synced with Supabase"))
+      .catch(() => setSyncState("Saved offline"));
+  };
+
+  const addVehicle = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const name = String(form.get("name"));
+    const next: FleetManagerVehicle = {
+      ...fleetManagerVehicles[0],
+      id: `fleet-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+      name,
+      category: String(form.get("category")),
+      status: "Draft",
+      displaySlot: "Unassigned",
+      dailyRate: String(form.get("dailyRate")),
+      hourlyRate: String(form.get("hourlyRate")),
+      publicLine: String(form.get("publicLine")),
+      heroImage: fleetManagerVehicles[0].heroImage,
+      photos: [],
+      photoCount: 0,
+      missingShots: [...fleetManagerVehicles[0].requiredShots],
+      nextAction: "Add photography and complete specifications",
+    };
+    const created = await createFleetVehicle(next).catch(() => next);
+    setRecords([created, ...records]);
+    setActiveId(created.id);
+    setShowForm(false);
+  };
 
   return (
     <section className="fleet-manager">
@@ -588,7 +829,7 @@ function FleetTable() {
           </p>
         </div>
         <div className="fleet-manager-actions">
-          <button className="primary-action">
+          <button className="primary-action" onClick={() => setShowForm(true)}>
             <Plus size={17} />
             <span>Add vehicle</span>
           </button>
@@ -603,7 +844,7 @@ function FleetTable() {
         <article>
           <span>Published</span>
           <strong>{publishedCount}</strong>
-          <p>{fleetManagerVehicles.length} vehicle records staged</p>
+          <p>{records.length} vehicle records staged</p>
         </article>
         <article>
           <span>Photo library</span>
@@ -612,7 +853,7 @@ function FleetTable() {
         </article>
         <article>
           <span>Media gaps</span>
-          <strong>{fleetManagerVehicles.reduce((sum, vehicle) => sum + vehicle.missingShots.length, 0)}</strong>
+          <strong>{records.reduce((sum, vehicle) => sum + vehicle.missingShots.length, 0)}</strong>
           <p>Interior, detail, and feature shots to capture</p>
         </article>
       </div>
@@ -621,8 +862,12 @@ function FleetTable() {
         <section className="panel fleet-record-panel">
           <PanelHeader title="Vehicle Records" action="Draft queue" />
           <div className="fleet-record-list">
-            {fleetManagerVehicles.map((vehicle) => (
-              <article className="fleet-record-card" key={vehicle.id}>
+            {visibleRecords.map((vehicle) => (
+              <article
+                className={cx("fleet-record-card", vehicle.id === activeVehicle.id && "selected-record")}
+                key={vehicle.id}
+                onClick={() => setActiveId(vehicle.id)}
+              >
                 <img src={vehicle.heroImage} alt="" />
                 <div>
                   <span className="mini-label">{vehicle.category} · {vehicle.displaySlot}</span>
@@ -647,7 +892,7 @@ function FleetTable() {
         </section>
 
         <section className="panel fleet-editor-panel">
-          <PanelHeader title="Editor Preview" action="Autosaved draft" />
+          <PanelHeader title="Vehicle Editor" action={syncState} />
           <div className="fleet-editor-preview">
             <img src={activeVehicle.heroImage} alt="" />
             <div>
@@ -656,21 +901,13 @@ function FleetTable() {
               <p>{activeVehicle.publicLine}</p>
             </div>
           </div>
-          <div className="fleet-editor-fields">
-            {[
-              ["Daily rate", activeVehicle.dailyRate],
-              ["Hourly rate", activeVehicle.hourlyRate],
-              ["Passengers", activeVehicle.passengers],
-              ["Drivetrain", activeVehicle.drivetrain],
-              ["Transmission", activeVehicle.transmission],
-              ["Engine", activeVehicle.engine],
-              ["Power", activeVehicle.power],
-            ].map(([label, value]) => (
-              <article key={label}>
-                <span>{label}</span>
-                <strong>{value}</strong>
-              </article>
-            ))}
+          <div className="fleet-editor-form">
+            <label>Status<select value={activeVehicle.status} onChange={(event) => updateActive({ status: event.target.value as FleetManagerVehicle["status"] })}>
+              <option>Published</option><option>Draft</option><option>Needs media</option><option>Hidden</option>
+            </select></label>
+            <label>Daily rate<input value={activeVehicle.dailyRate} onChange={(event) => updateActive({ dailyRate: event.target.value })} /></label>
+            <label>Hourly rate<input value={activeVehicle.hourlyRate} onChange={(event) => updateActive({ hourlyRate: event.target.value })} /></label>
+            <label>Public line<textarea value={activeVehicle.publicLine} onChange={(event) => updateActive({ publicLine: event.target.value })} /></label>
           </div>
           <div className="fleet-highlight-editor">
             <span className="mini-label">Public highlights</span>
@@ -716,22 +953,71 @@ function FleetTable() {
           </div>
         </section>
       </div>
+      {showForm && (
+        <Modal title="Add fleet vehicle" onClose={() => setShowForm(false)}>
+          <form className="command-form" onSubmit={addVehicle}>
+            <label>Vehicle name<input name="name" required placeholder="Ferrari 296 GTB" /></label>
+            <label>Category<input name="category" required placeholder="Supercar" /></label>
+            <label>Daily rate<input name="dailyRate" required placeholder="$1,499" /></label>
+            <label>Hourly rate<input name="hourlyRate" required placeholder="$350" /></label>
+            <label className="wide">Public line<textarea name="publicLine" required placeholder="A concise, customer-facing description." /></label>
+            <div className="form-footer">
+              <button type="button" className="secondary-action" onClick={() => setShowForm(false)}>Cancel</button>
+              <button className="primary-action">Add draft vehicle</button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </section>
   );
 }
 
-function TaskBoard({ inspection }: { inspection: boolean }) {
+type TaskRecord = (typeof tasks)[number];
+
+function TaskBoard({ inspection, search }: { inspection: boolean; search: string }) {
+  const [taskRecords, setTaskRecords] = usePersistentState<TaskRecord[]>("prestige:launch:tasks", tasks);
+  const [showForm, setShowForm] = useState(false);
+  const visibleTasks = taskRecords.filter((task) =>
+    `${task.title} ${task.type} ${task.assignee} ${task.status}`.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  useEffect(() => {
+    const open = (event: Event) => {
+      if ((event as CustomEvent).detail === "operations") setShowForm(true);
+    };
+    window.addEventListener("prestige:new-record", open);
+    return () => window.removeEventListener("prestige:new-record", open);
+  }, []);
+
+  const cycleTask = (task: TaskRecord) => {
+    const nextStatus = task.status === "Open" ? "In progress" : task.status === "In progress" ? "Blocked" : "Open";
+    setTaskRecords(taskRecords.map((item) => item.title === task.title ? { ...item, status: nextStatus } : item));
+  };
+
+  const addTask = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    setTaskRecords([...taskRecords, {
+      title: String(form.get("title")),
+      type: String(form.get("type")),
+      due: String(form.get("due")),
+      assignee: String(form.get("assignee")),
+      status: "Open",
+    }]);
+    setShowForm(false);
+  };
+
   return (
     <section className="panel">
-      <PanelHeader title={inspection ? "Inspection Queue" : "Task Board"} action="Assign" />
+      <PanelHeader title={inspection ? "Inspection Queue" : "Task Board"} action="Click a task to advance" />
       <div className="task-columns">
         {["Open", "In progress", "Blocked"].map((column) => (
           <div className="task-column" key={column}>
             <span className="mini-label">{column}</span>
-            {tasks
+            {visibleTasks
               .filter((task) => task.status === column || (column === "Open" && task.status === "Open"))
               .map((task) => (
-                <article className="task-card" key={task.title}>
+                <article className="task-card" key={task.title} onClick={() => cycleTask(task)}>
                   <strong>{inspection ? task.type : task.title}</strong>
                   <span>{inspection ? task.title : task.type}</span>
                   <p>{task.assignee} · Due {task.due}</p>
@@ -740,16 +1026,90 @@ function TaskBoard({ inspection }: { inspection: boolean }) {
           </div>
         ))}
       </div>
+      {visibleTasks.length === 0 && (
+        <div className="module-empty compact-empty">
+          <Command size={26} />
+          <h2>No operational tasks</h2>
+          <p>The task board is ready for real assignments.</p>
+        </div>
+      )}
+      <button className="secondary-action full-width-action" onClick={() => setShowForm(true)}>
+        <Plus size={16} /> Add operational task
+      </button>
+      {showForm && (
+        <Modal title="Add operational task" onClose={() => setShowForm(false)}>
+          <form className="command-form" onSubmit={addTask}>
+            <label className="wide">Task<input name="title" required placeholder="Confirm delivery address" /></label>
+            <label>Type<input name="type" required placeholder="Delivery" /></label>
+            <label>Assignee<input name="assignee" required placeholder="Theresa" /></label>
+            <label>Due<input name="due" required placeholder="3:30 PM" /></label>
+            <div className="form-footer">
+              <button type="button" className="secondary-action" onClick={() => setShowForm(false)}>Cancel</button>
+              <button className="primary-action">Add task</button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </section>
   );
 }
 
-function ClientIntakeCommandCenter({ moduleId }: { moduleId: "customers" | "leads" }) {
-  const activeProfile = clientIntakeProfiles[0];
-  const paymentReadyCount = clientIntakeProfiles.filter((profile) => profile.stage === "Payment ready" || profile.stage === "Approved").length;
-  const averageCompleteness = Math.round(
-    clientIntakeProfiles.reduce((sum, profile) => sum + profile.profileCompleteness, 0) / clientIntakeProfiles.length,
+const intakeStages: ClientIntakeStage[] = ["Lead", "Profile started", "Documents needed", "Payment ready", "Approved"];
+
+function ClientIntakeCommandCenter({ moduleId, search }: { moduleId: "customers" | "leads"; search: string }) {
+  const [profiles, setProfiles] = usePersistentState<ClientIntakeProfile[]>("prestige:launch:customers", clientIntakeProfiles);
+  const [activeId, setActiveId] = useState(profiles[0]?.id ?? "");
+  const [showForm, setShowForm] = useState(false);
+  const activeProfile = profiles.find((profile) => profile.id === activeId) ?? profiles[0];
+  const visibleProfiles = profiles.filter((profile) =>
+    `${profile.id} ${profile.name} ${profile.preferredVehicle} ${profile.stage}`.toLowerCase().includes(search.toLowerCase()),
   );
+  const paymentReadyCount = profiles.filter((profile) => profile.stage === "Payment ready" || profile.stage === "Approved").length;
+  const averageCompleteness = profiles.length
+    ? Math.round(profiles.reduce((sum, profile) => sum + profile.profileCompleteness, 0) / profiles.length)
+    : 0;
+
+  useEffect(() => {
+    const open = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      if (detail === "customers" || detail === "leads") setShowForm(true);
+    };
+    window.addEventListener("prestige:new-record", open);
+    return () => window.removeEventListener("prestige:new-record", open);
+  }, []);
+
+  const advanceProfile = () => {
+    if (!activeProfile) return;
+    const currentIndex = intakeStages.indexOf(activeProfile.stage);
+    const nextStage = intakeStages[Math.min(currentIndex + 1, intakeStages.length - 1)];
+    const nextCompleteness = Math.min(100, activeProfile.profileCompleteness + 18);
+    setProfiles(profiles.map((profile) =>
+      profile.id === activeProfile.id
+        ? { ...profile, stage: nextStage, profileCompleteness: nextCompleteness, nextAction: nextStage === "Approved" ? "Ready for reservation creation" : `Complete ${nextStage.toLowerCase()} review` }
+        : profile,
+    ));
+  };
+
+  const addProfile = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const next: ClientIntakeProfile = {
+      id: `CLI-2026-${String(190 + profiles.length).padStart(4, "0")}`,
+      name: String(form.get("name")),
+      stage: "Lead",
+      source: String(form.get("source")),
+      preferredVehicle: String(form.get("vehicle")),
+      tripWindow: String(form.get("tripWindow")),
+      profileCompleteness: 20,
+      paymentStatus: "Deferred",
+      squareCustomer: "Not configured",
+      savedPayment: "Payments deferred",
+      nextAction: "Complete contact and driver profile",
+    };
+    setProfiles([next, ...profiles]);
+    setActiveId(next.id);
+    setShowForm(false);
+  };
 
   return (
     <section className="client-intake">
@@ -759,17 +1119,17 @@ function ClientIntakeCommandCenter({ moduleId }: { moduleId: "customers" | "lead
           <h2>Capture renters once, approve them carefully, and reuse the profile for future rentals.</h2>
           <p>
             The MVP creates a clean path for website inquiries, concierge entries, and an iPad intake experience.
-            Payment details are secured through Square, while the command center stores only safe references.
+            Payment collection is intentionally deferred while fleet, customer, document, and approval operations come online.
           </p>
         </div>
         <div className="client-intake-actions">
-          <button className="primary-action">
+          <button className="primary-action" onClick={() => setShowForm(true)}>
             <Plus size={17} />
             <span>Start intake</span>
           </button>
-          <button className="secondary-action">
+          <button className="secondary-action" onClick={advanceProfile} disabled={!activeProfile}>
             <Shield size={17} />
-            <span>Send setup link</span>
+            <span>Advance selected profile</span>
           </button>
         </div>
       </div>
@@ -777,13 +1137,13 @@ function ClientIntakeCommandCenter({ moduleId }: { moduleId: "customers" | "lead
       <div className="client-intake-metrics" aria-label="Client intake summary">
         <article>
           <span>Profiles</span>
-          <strong>{clientIntakeProfiles.length}</strong>
+          <strong>{profiles.length}</strong>
           <p>Active renter records in review</p>
         </article>
         <article>
           <span>Payment ready</span>
           <strong>{paymentReadyCount}</strong>
-          <p>Reusable Square payment references on file</p>
+          <p>Profiles ready beyond document review</p>
         </article>
         <article>
           <span>Average readiness</span>
@@ -796,8 +1156,19 @@ function ClientIntakeCommandCenter({ moduleId }: { moduleId: "customers" | "lead
         <section className="panel intake-profile-panel">
           <PanelHeader title="Intake Queue" action="Filter" />
           <div className="intake-profile-list">
-            {clientIntakeProfiles.map((profile) => (
-              <article className="intake-profile-card" key={profile.id}>
+            {visibleProfiles.length === 0 && (
+              <div className="module-empty compact-empty">
+                <Command size={26} />
+                <h2>No customers yet</h2>
+                <p>Start the first real intake when a customer inquiry arrives.</p>
+              </div>
+            )}
+            {visibleProfiles.map((profile) => (
+              <article
+                className={cx("intake-profile-card", profile.id === activeProfile.id && "selected-record")}
+                key={profile.id}
+                onClick={() => setActiveId(profile.id)}
+              >
                 <div>
                   <span className="mini-label">{profile.id} · {profile.source}</span>
                   <h3>{profile.name}</h3>
@@ -820,28 +1191,38 @@ function ClientIntakeCommandCenter({ moduleId }: { moduleId: "customers" | "lead
         </section>
 
         <section className="panel intake-editor-panel">
-          <PanelHeader title="Profile + Payment Preference" action="Autosaved draft" />
-          <div className="intake-editor-summary">
-            <span className="mini-label">{activeProfile.id}</span>
-            <h3>{activeProfile.name}</h3>
-            <p>{activeProfile.preferredVehicle} · {activeProfile.tripWindow}</p>
-          </div>
-          <div className="payment-reference-card">
-            <Shield size={20} />
-            <div>
-              <span>Payment preference</span>
-              <strong>{activeProfile.savedPayment}</strong>
-              <p>{activeProfile.squareCustomer} · {activeProfile.paymentStatus}</p>
+          <PanelHeader title="Profile Review" action="Saved locally" />
+          {activeProfile ? (
+            <>
+              <div className="intake-editor-summary">
+                <span className="mini-label">{activeProfile.id}</span>
+                <h3>{activeProfile.name}</h3>
+                <p>{activeProfile.preferredVehicle} · {activeProfile.tripWindow}</p>
+              </div>
+              <div className="payment-reference-card">
+                <Shield size={20} />
+                <div>
+                  <span>Integration status</span>
+                  <strong>Payments deferred</strong>
+                  <p>Customer and approval workflows can proceed without the payment portal.</p>
+                </div>
+              </div>
+              <div className="intake-requirement-list">
+                {intakeProfileRequirements.map((requirement) => (
+                  <article key={requirement}>
+                    <Check size={14} />
+                    <span>{requirement}</span>
+                  </article>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="module-empty compact-empty">
+              <Shield size={26} />
+              <h2>Awaiting first customer</h2>
+              <p>New intake details and approval requirements will appear here.</p>
             </div>
-          </div>
-          <div className="intake-requirement-list">
-            {intakeProfileRequirements.map((requirement) => (
-              <article key={requirement}>
-                <Check size={14} />
-                <span>{requirement}</span>
-              </article>
-            ))}
-          </div>
+          )}
         </section>
 
         <section className="panel ipad-intake-panel">
@@ -865,7 +1246,7 @@ function ClientIntakeCommandCenter({ moduleId }: { moduleId: "customers" | "lead
         </section>
 
         <section className="panel payment-blueprint-panel">
-          <PanelHeader title="Square Payments Blueprint" action="Server step" />
+          <PanelHeader title="Deferred Payments Boundary" action="Later phase" />
           <div className="foundation-list">
             {intakePaymentBlueprint.map((item) => (
               <article key={item}>
@@ -876,202 +1257,44 @@ function ClientIntakeCommandCenter({ moduleId }: { moduleId: "customers" | "lead
           </div>
         </section>
       </div>
+      {showForm && (
+        <Modal title="Start customer intake" onClose={() => setShowForm(false)}>
+          <form className="command-form" onSubmit={addProfile}>
+            <label>Customer name<input name="name" required placeholder="First and last name" /></label>
+            <label>Source<select name="source"><option>Website inquiry</option><option>iPad showroom intake</option><option>Concierge referral</option><option>Hotel partner</option></select></label>
+            <label>Preferred vehicle<select name="vehicle">{fleetManagerVehicles.map((vehicle) => <option key={vehicle.id}>{vehicle.name}</option>)}</select></label>
+            <label>Trip window<input name="tripWindow" required placeholder="Jun 28-30" /></label>
+            <div className="form-footer">
+              <button type="button" className="secondary-action" onClick={() => setShowForm(false)}>Cancel</button>
+              <button className="primary-action">Create intake</button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </section>
   );
 }
 
-type InsuranceChoice = "none" | "gap" | "full";
-type HandoffChoice = "pickup" | "delivery";
-type CollectionChoice = "terminal" | "remote";
-
-const money = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 0,
-});
-
-function SquareFinanceCommandCenter() {
-  const [handoff, setHandoff] = useState<HandoffChoice>("delivery");
-  const [insurance, setInsurance] = useState<InsuranceChoice>("gap");
-  const [collection, setCollection] = useState<CollectionChoice>("terminal");
-  const [rentalCharge, setRentalCharge] = useState(2400);
-  const [insurancePremium, setInsurancePremium] = useState(185);
-  const [paymentState, setPaymentState] = useState("Draft");
-
-  const deliveryFee = handoff === "delivery" ? 50 : 0;
-  const approvedInsurancePremium = insurance === "none" ? 0 : Math.max(0, insurancePremium);
-  const chargeNow = Math.max(0, rentalCharge) + deliveryFee + approvedInsurancePremium;
-  const securityDeposit = 500;
-
-  const chooseInsurance = (choice: InsuranceChoice) => {
-    setInsurance(choice);
-    if (choice === "none") setInsurancePremium(0);
-  };
-
-  const preparePayment = () => {
-    setPaymentState(collection === "terminal" ? "Ready for Square Terminal" : "Square payment request ready");
-  };
-
+function DeferredFinanceView() {
   return (
-    <div className="square-finance">
-      <section className="square-finance-hero">
-        <div>
-          <span className="eyebrow">Square payments</span>
-          <h2>Build the rental charge, protect the vehicle, and collect in person or remotely.</h2>
-          <p>
-            Rental charges, delivery, insurance, and the refundable security authorization remain separate and
-            traceable from reservation through closeout.
-          </p>
-        </div>
-        <div className="square-status-card">
-          <span>Reservation</span>
-          <strong>PP-R-2026-00042</strong>
-          <p>Avery Stone · Lamborghini Urus</p>
-          <StatusPill label={paymentState} />
-        </div>
-      </section>
-
-      <div className="square-finance-grid">
-        <section className="panel payment-composer">
-          <PanelHeader title="Payment Builder" action="Autosaved" />
-
-          <div className="payment-section">
-            <div className="payment-section-heading">
-              <ReceiptText size={18} />
-              <div>
-                <strong>Rental charge</strong>
-                <span>Approved reservation amount before add-ons</span>
-              </div>
-            </div>
-            <label className="money-input">
-              <span>$</span>
-              <input
-                aria-label="Rental charge"
-                min="0"
-                onChange={(event) => setRentalCharge(Number(event.target.value))}
-                type="number"
-                value={rentalCharge}
-              />
-            </label>
-          </div>
-
-          <div className="payment-section">
-            <div className="payment-section-heading">
-              <MapPin size={18} />
-              <div>
-                <strong>Vehicle handoff</strong>
-                <span>Delivery adds a fixed $50 concierge fee</span>
-              </div>
-            </div>
-            <div className="choice-grid two">
-              <button className={cx("choice-card", handoff === "pickup" && "selected")} onClick={() => setHandoff("pickup")}>
-                <Store size={19} />
-                <strong>Pick up in person</strong>
-                <span>No delivery fee</span>
-              </button>
-              <button className={cx("choice-card", handoff === "delivery" && "selected")} onClick={() => setHandoff("delivery")}>
-                <MapPin size={19} />
-                <strong>Concierge delivery</strong>
-                <span>+$50</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="payment-section">
-            <div className="payment-section-heading">
-              <Shield size={18} />
-              <div>
-                <strong>Insurance coverage</strong>
-                <span>Select the approved protection path for this rental</span>
-              </div>
-            </div>
-            <div className="choice-grid three insurance-choices">
-              <button className={cx("choice-card", insurance === "none" && "selected")} onClick={() => chooseInsurance("none")}>
-                <strong>Renter coverage</strong>
-                <span>Verified as sufficient</span>
-              </button>
-              <button className={cx("choice-card", insurance === "gap" && "selected")} onClick={() => chooseInsurance("gap")}>
-                <strong>Gap package</strong>
-                <span>Covers the verified shortfall</span>
-              </button>
-              <button className={cx("choice-card", insurance === "full" && "selected")} onClick={() => chooseInsurance("full")}>
-                <strong>Full package</strong>
-                <span>Complete rental protection</span>
-              </button>
-            </div>
-            {insurance !== "none" && (
-              <label className="premium-input">
-                <span>Approved insurance premium</span>
-                <div className="money-input">
-                  <span>$</span>
-                  <input
-                    aria-label="Approved insurance premium"
-                    min="0"
-                    onChange={(event) => setInsurancePremium(Number(event.target.value))}
-                    type="number"
-                    value={insurancePremium}
-                  />
-                </div>
-                <small>Entered after coverage eligibility and carrier pricing are confirmed.</small>
-              </label>
-            )}
-          </div>
-        </section>
-
-        <aside className="panel payment-summary-panel">
-          <PanelHeader title="Collection Summary" action="Square" />
-          <div className="summary-lines">
-            <div><span>Rental charge</span><strong>{money.format(Math.max(0, rentalCharge))}</strong></div>
-            <div><span>Delivery</span><strong>{deliveryFee ? money.format(deliveryFee) : "Included"}</strong></div>
-            <div>
-              <span>{insurance === "full" ? "Full insurance package" : insurance === "gap" ? "Gap insurance package" : "Renter insurance"}</span>
-              <strong>{approvedInsurancePremium ? money.format(approvedInsurancePremium) : "Verified"}</strong>
-            </div>
-          </div>
-          <div className="charge-total">
-            <span>Charge now</span>
-            <strong>{money.format(chargeNow)}</strong>
-          </div>
-          <div className="deposit-callout">
-            <Shield size={20} />
-            <div>
-              <span>Refundable security authorization</span>
-              <strong>{money.format(securityDeposit)}</strong>
-              <p>Held separately in Square and released after return review unless an approved charge is captured.</p>
-            </div>
-          </div>
-          <div className="total-exposure">
-            <span>Card authorization at handoff</span>
-            <strong>{money.format(chargeNow + securityDeposit)}</strong>
-            <small>{money.format(chargeNow)} charge + {money.format(securityDeposit)} refundable hold</small>
-          </div>
-
-          <div className="collection-method">
-            <span className="mini-label">How will the renter pay?</span>
-            <div className="choice-grid two">
-              <button className={cx("choice-card compact", collection === "terminal" && "selected")} onClick={() => setCollection("terminal")}>
-                <CreditCard size={18} />
-                <strong>In person</strong>
-                <span>Square Terminal</span>
-              </button>
-              <button className={cx("choice-card compact", collection === "remote" && "selected")} onClick={() => setCollection("remote")}>
-                <ReceiptText size={18} />
-                <strong>Remote</strong>
-                <span>Payment request</span>
-              </button>
-            </div>
-          </div>
-
-          <button className="primary-action payment-ready-action" onClick={preparePayment}>
-            <CreditCard size={17} />
-            <span>{collection === "terminal" ? "Send to Square Terminal" : "Create Square payment request"}</span>
-          </button>
-          <p className="payment-disclaimer">
-            Insurance selections require documented eligibility and approved policy terms before collection.
-          </p>
-        </aside>
+    <section className="panel deferred-finance">
+      <span className="eyebrow">Deferred integration</span>
+      <h2>Finance and Square are intentionally parked for a later phase.</h2>
+      <p>
+        Fleet, intake, reservations, operations, and inspections can be built and tested without exposing
+        payment actions before the Square account, credentials, staff permissions, and server layer are ready.
+      </p>
+      <div className="foundation-list">
+        {[
+          "No live payment or authorization actions are exposed",
+          "Reservation lifecycle remains independent from provider setup",
+          "Customer records store no payment credentials",
+          "The future adapter can connect without rewriting operations",
+        ].map((item) => (
+          <article key={item}><Shield size={17} /><span>{item}</span></article>
+        ))}
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -1167,6 +1390,33 @@ function PanelHeader({ title, action }: { title: string; action: string }) {
   );
 }
 
+function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  return (
+    <div className="command-modal-backdrop" role="presentation" onMouseDown={onClose}>
+      <section className="command-modal" role="dialog" aria-modal="true" aria-labelledby="command-modal-title" onMouseDown={(event) => event.stopPropagation()}>
+        <header>
+          <div>
+            <span className="mini-label">PrestigeOS workflow</span>
+            <h2 id="command-modal-title">{title}</h2>
+          </div>
+          <button className="icon-button" onClick={onClose} aria-label="Close">
+            <X size={18} />
+          </button>
+        </header>
+        {children}
+      </section>
+    </div>
+  );
+}
+
 function StatusPill({ label }: { label: string }) {
   const normalized = label.toLowerCase();
   const tone = normalized.includes("blocked") || normalized.includes("needs")
@@ -1177,8 +1427,4 @@ function StatusPill({ label }: { label: string }) {
         ? "complete"
         : "neutral";
   return <span className={cx("status-pill", tone)}>{label}</span>;
-}
-
-function SeverityBadge({ label }: { label: string }) {
-  return <span className={cx("severity-badge", label.toLowerCase())}>{label}</span>;
 }
