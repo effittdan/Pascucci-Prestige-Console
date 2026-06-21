@@ -121,7 +121,7 @@ export const timelineEvents = [
   {
     time: "10:00 AM",
     activity: "Return",
-    vehicle: "Mercedes G63",
+    vehicle: "McLaren GT",
     customer: "Miles Carter",
     location: "SAT private arrivals",
     owner: "Dan",
@@ -130,7 +130,7 @@ export const timelineEvents = [
   {
     time: "1:15 PM",
     activity: "Prep",
-    vehicle: "Porsche 911 Carrera",
+    vehicle: "Porsche 911 Cabriolet",
     customer: "Natalie Reyes",
     location: "North showroom",
     owner: "Rosie",
@@ -139,7 +139,7 @@ export const timelineEvents = [
   {
     time: "4:00 PM",
     activity: "Delivery",
-    vehicle: "Range Rover Autobiography",
+    vehicle: "Lamborghini Urus",
     customer: "Bennett Group",
     location: "Pearl District",
     owner: "Contract driver",
@@ -151,15 +151,14 @@ export const attentionQueue = [
   { label: "Insurance document expires before return", entity: "PP-R-2026-00042", severity: "Blocked" },
   { label: "Delivery assignment has no confirmed driver", entity: "Urus at Hotel Emma", severity: "Warning" },
   { label: "Agreement viewed but not signed", entity: "Natalie Reyes", severity: "Pending" },
-  { label: "Return inspection photos unsynced", entity: "G63 return", severity: "Warning" },
+  { label: "Return inspection photos unsynced", entity: "McLaren GT return", severity: "Warning" },
   { label: "Security authorization release due", entity: "PP-R-2026-00037", severity: "Finance" },
 ];
 
 export const vehicles = [
   { name: "Lamborghini Urus", plate: "PP-URUS", status: "Staged", next: "Delivery 8:30 AM", revenue: "$4,850", readiness: 91 },
-  { name: "Mercedes G63", plate: "PP-G63", status: "Active rental", next: "Return 10:00 AM", revenue: "$3,200", readiness: 84 },
-  { name: "Porsche 911 Carrera", plate: "PP-911", status: "Preparing", next: "Inspection 12:45 PM", revenue: "$2,775", readiness: 67 },
-  { name: "Range Rover Autobiography", plate: "PP-RR", status: "Ready", next: "Delivery 4:00 PM", revenue: "$2,150", readiness: 96 },
+  { name: "McLaren GT", plate: "PP-MCL", status: "Active rental", next: "Return 10:00 AM", revenue: "$3,200", readiness: 84 },
+  { name: "Porsche 911 Cabriolet", plate: "PP-911", status: "Preparing", next: "Inspection 12:45 PM", revenue: "$2,775", readiness: 67 },
 ];
 
 export type FleetManagerVehicle = {
@@ -334,29 +333,6 @@ export const fleetManagerVehicles: FleetManagerVehicle[] = [
     publicLine: "Open-air precision with everyday polish.",
     nextAction: "Real photography set complete",
   },
-  {
-    id: "fleet-maserati-mc20",
-    name: "Maserati MC20",
-    category: "Supercar",
-    status: "Needs media",
-    displaySlot: "Standard",
-    dailyRate: "Request",
-    hourlyRate: "Request",
-    passengers: "2",
-    drivetrain: "Rear-wheel drive",
-    transmission: "8-speed dual-clutch",
-    engine: "3.0L twin-turbo Nettuno V6",
-    power: "621 hp",
-    heroImage: "/concierge-assets/cars/maserati-mc20.png",
-    photos: ["/concierge-assets/cars/maserati-mc20.png"],
-    photoCount: 1,
-    maxPhotos: 12,
-    requiredShots: ["Primary exterior"],
-    missingShots: ["Side profile", "Rear detail", "Cockpit", "Butterfly doors", "Wheel detail"],
-    highlights: ["Italian supercar feel", "Butterfly doors", "Low-production presence"],
-    publicLine: "Sculpted speed with grand touring poise.",
-    nextAction: "Complete launch gallery before promotion",
-  },
 ];
 
 export const fleetManagerBlueprint = [
@@ -453,15 +429,15 @@ export const ipadIntakeSteps = [
 
 export const reservations = [
   { id: "PP-R-2026-00042", customer: "Avery Stone", vehicle: "Lamborghini Urus", status: "Pending approval", total: "$4,850", dates: "Jun 8-11", issue: "Document blocked" },
-  { id: "PP-R-2026-00043", customer: "Bennett Group", vehicle: "Range Rover Autobiography", status: "Confirmed", total: "$2,150", dates: "Jun 8-9", issue: "Ready" },
-  { id: "PP-R-2026-00044", customer: "Natalie Reyes", vehicle: "Porsche 911 Carrera", status: "Quote accepted", total: "$2,775", dates: "Jun 9-12", issue: "Agreement pending" },
+  { id: "PP-R-2026-00043", customer: "Bennett Group", vehicle: "McLaren GT", status: "Confirmed", total: "$2,150", dates: "Jun 8-9", issue: "Ready" },
+  { id: "PP-R-2026-00044", customer: "Natalie Reyes", vehicle: "Porsche 911 Cabriolet", status: "Quote accepted", total: "$2,775", dates: "Jun 9-12", issue: "Agreement pending" },
 ];
 
 export const tasks = [
   { title: "Confirm hotel delivery contact", type: "Delivery", due: "7:45 AM", assignee: "Theresa", status: "In progress" },
   { title: "Review updated insurance card", type: "Document review", due: "9:00 AM", assignee: "Rosie", status: "Blocked" },
   { title: "Capture return mileage and dashboard", type: "Inspection", due: "10:15 AM", assignee: "Dan", status: "Open" },
-  { title: "Prep Range Rover accessories kit", type: "Vehicle prep", due: "2:30 PM", assignee: "Mark Motors", status: "Open" },
+  { title: "Prep McLaren accessories kit", type: "Vehicle prep", due: "2:30 PM", assignee: "Mark Motors", status: "Open" },
 ];
 
 export const auditEvents = [
@@ -548,7 +524,7 @@ export const inspectionQueue: InspectionQueueItem[] = [
     id: "INS-2026-0139",
     reservation: "PP-R-2026-00038",
     customer: "Miles Carter",
-    vehicle: "Mercedes-Benz G 63",
+    vehicle: "McLaren GT",
     type: "Return",
     status: "Under review",
     damageReview: "Possible change",
@@ -562,7 +538,7 @@ export const inspectionQueue: InspectionQueueItem[] = [
     id: "INS-2026-0145",
     reservation: "PP-R-2026-00043",
     customer: "Bennett Group",
-    vehicle: "Range Rover Autobiography",
+    vehicle: "Porsche 911 Cabriolet",
     type: "Checkout",
     status: "Awaiting acknowledgment",
     damageReview: "Not required",
@@ -576,7 +552,7 @@ export const inspectionQueue: InspectionQueueItem[] = [
     id: "INS-2026-0148",
     reservation: "PP-R-2026-00047",
     customer: "Sofia Nguyen",
-    vehicle: "Ferrari 296",
+    vehicle: "Lamborghini Urus",
     type: "Return",
     status: "Draft",
     damageReview: "Pending",

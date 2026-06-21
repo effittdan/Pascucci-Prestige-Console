@@ -691,7 +691,7 @@
   padding: clamp(72px, 12vw, 160px) clamp(18px, 7vw, 104px);
   background:
     linear-gradient(90deg, rgba(9, 10, 11, 0.82), rgba(9, 10, 11, 0.44)),
-    url("/concierge-assets/cars/maserati-mc20.png") center / cover;
+    url("/concierge-assets/cars/mclaren-gt-real-04.jpg") center / cover;
 }
 
 .city-band div {
@@ -3785,7 +3785,7 @@ body {
 .city-band {
   background:
     linear-gradient(to top, #090a0b, rgba(9, 10, 11, 0.7), rgba(9, 10, 11, 0.4)),
-    url("/concierge-assets/cars/maserati-mc20.png") center / cover;
+    url("/concierge-assets/cars/mclaren-gt-real-04.jpg") center / cover;
 }
 
 .reserve-band {

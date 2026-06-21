@@ -138,51 +138,15 @@ const fleet: FleetCar[] = [
     ],
     highlights: ["Silver cabriolet", "Open-air grand touring", "Availability by request"],
   },
-  {
-    name: "Maserati MC20",
-    category: "Supercar",
-    line: "Sculpted speed with grand touring poise.",
-    price: "Request pricing",
-    specs: "2 passengers - RWD - 621 hp",
-    image: asset("cars/maserati-mc20.png"),
-    gallery: [asset("cars/maserati-mc20.png")],
-    details: [
-      { label: "Engine", value: "3.0L twin-turbo Nettuno V6" },
-      { label: "Transmission", value: "8-speed dual-clutch automatic" },
-      { label: "Drivetrain", value: "Rear-wheel drive" },
-      { label: "Passengers", value: "2" },
-      { label: "Power", value: "621 hp" },
-      { label: "Best for", value: "Supercar experiences and special events" },
-    ],
-    highlights: ["Italian supercar feel", "Butterfly doors", "Low-production presence"],
-  },
-  {
-    name: "Mercedes-AMG G63",
-    category: "Executive SUV",
-    line: "Iconic presence, effortless arrival.",
-    price: "From $1,295 / day",
-    specs: "5 passengers - AWD - delivery available",
-    image: asset("cars/mercedes-g63.png"),
-    gallery: [asset("cars/mercedes-g63.png")],
-    details: [
-      { label: "Engine", value: "4.0L biturbo V8" },
-      { label: "Transmission", value: "9-speed automatic" },
-      { label: "Drivetrain", value: "All-wheel drive" },
-      { label: "Passengers", value: "5" },
-      { label: "Power", value: "577 hp" },
-      { label: "Best for", value: "Executive movement, families, hotel arrivals" },
-    ],
-    highlights: ["Iconic G-Class stance", "Luxury SUV practicality", "Concierge delivery available"],
-  },
 ];
 
 const occasions = [
-  ["Weddings", "Couture arrivals, getaway moments, and full-day coordination tailored to the ceremony.", "Rolls-Royce, Mercedes-AMG, Lamborghini"],
-  ["Corporate travel", "Quiet movement for executives, visiting partners, and client-facing pickups.", "Executive SUVs, exotic GTs"],
-  ["Weekend escapes", "Hill Country, the coast or just a Saturday - your weekend, upgraded.", "Urus, MC20, Porsche 911"],
-  ["Birthdays & anniversaries", "Mark the milestone with a vehicle worth remembering.", "Porsche, Lamborghini, Maserati"],
-  ["Photo & video productions", "Curated vehicles delivered to set, with flexible hold windows.", "Full fleet available"],
-  ["Hotel stays & airport arrivals", "Meet your vehicle at the lobby, FBO or terminal.", "Full fleet available"],
+  ["Weddings", "Couture arrivals, getaway moments, and full-day coordination tailored to the ceremony.", "McLaren GT, Lamborghini Urus, Porsche 911"],
+  ["Corporate travel", "Quiet movement for executives, visiting partners, and client-facing pickups.", "McLaren GT, Lamborghini Urus, Porsche 911"],
+  ["Weekend escapes", "Hill Country, the coast or just a Saturday - your weekend, upgraded.", "Lamborghini Urus, McLaren GT, Porsche 911"],
+  ["Birthdays & anniversaries", "Mark the milestone with a vehicle worth remembering.", "Porsche 911, Lamborghini Urus, McLaren GT"],
+  ["Photo & video productions", "Curated vehicles delivered to set, with flexible hold windows.", "Our three-vehicle collection"],
+  ["Hotel stays & airport arrivals", "Meet your vehicle at the lobby, FBO or terminal.", "Our three-vehicle collection"],
 ];
 
 const faqs = [
@@ -422,7 +386,7 @@ function ConciergePromise() {
   return (
     <section className="split-promise">
       <div className="promise-photo">
-        <img src={asset("cars/mercedes-g63.png")} alt="Mercedes-AMG G63 prepared for concierge delivery" />
+        <img src={asset("cars/lamborghini-urus-real-06.jpg")} alt="Lamborghini Urus prepared for concierge delivery" />
       </div>
       <div className="promise-copy">
         <span className="public-kicker">The concierge promise</span>
@@ -496,7 +460,7 @@ function SanAntonioBand() {
 function Testimonials() {
   const quotes = [
     ["The Urus arrived at the hotel exactly as promised. Discreet, immaculate, handed off in under a minute. We will use Pascucci again.", "M. Lawson", "Executive client"],
-    ["They delivered the G63 to the chapel, waited quietly, then brought it back at midnight. Felt like a private service, not a rental.", "A. & J. Reyes", "Wedding client"],
+    ["They delivered the McLaren to the chapel, waited quietly, then brought it back at midnight. Felt like a private service, not a rental.", "A. & J. Reyes", "Wedding client"],
     ["Picked us up at the terminal in the Porsche. The weekend started the moment we stepped outside.", "D. Patel", "Weekend escape"],
   ];
 
