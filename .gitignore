@@ -7,3 +7,4 @@ qa-final-*.png
 .env
 .env.*
 !.env.example
+supabase/.temp/
