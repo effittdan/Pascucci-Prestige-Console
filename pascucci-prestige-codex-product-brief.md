@@ -1031,11 +1031,23 @@ The application must maintain its own financial ledger of rental-related transac
 
 - Build a payment-provider adapter interface.
 - Support a `manual` provider for initial testing and offline transactions.
-- Add Stripe in test mode behind the adapter.
+- Add Square Sandbox behind the adapter.
+- Support Square Web Payments for remote collection and Square Terminal for in-person collection.
 - Never store raw card numbers or CVC values.
 - Use provider webhooks as the authoritative source for asynchronous status updates.
 - Make webhook handling idempotent.
 - Store webhook receipt and processing records.
+
+### Required reservation charges
+
+- Add a fixed `$50` delivery fee when the vehicle is delivered instead of picked up in person.
+- Create a separate refundable `$500` security authorization for every rental.
+- Never combine the security authorization with rental revenue in the application ledger.
+- Allow the renter to purchase either:
+  - a full insurance package, or
+  - a gap package covering the difference between verified renter coverage and the coverage required for the selected vehicle.
+- Store the approved insurance premium and coverage selection as separate reservation charge records.
+- Require documented eligibility and approved policy terms before an insurance premium can be collected.
 
 ### Security authorization note
 
@@ -2229,7 +2241,7 @@ At minimum:
 
 - Transactions are recorded separately from reservation status.
 - Security authorization is visibly separate from rental payment.
-- Manual and Stripe test-mode provider paths use the same application interface.
+- Manual and Square Sandbox provider paths use the same application interface.
 - Webhook processing is idempotent.
 
 ## Epic I: Customer portal
@@ -2336,7 +2348,7 @@ Deliverable:
 
 ## Phase 7: Integrations and reporting
 
-- Payment adapter and Stripe test mode
+- Payment adapter, Square Sandbox, and Square Terminal
 - Agreement adapter
 - Email and SMS outbox
 - CSV reports
@@ -2463,7 +2475,8 @@ The selected platform direction is compatible with current official guidance:
 - Supabase Auth can be combined with PostgreSQL Row Level Security for authorization: https://supabase.com/docs/guides/auth
 - Supabase Storage access can be governed with Row Level Security policies: https://supabase.com/docs/guides/storage/security/access-control
 - Supabase warns that browser-accessible tables require appropriate RLS or equivalent controls: https://supabase.com/docs/guides/api/securing-your-api
-- Stripe PaymentIntents support payment lifecycles and separate authorization/capture workflows: https://docs.stripe.com/payments/payment-intents
+- Square Payments supports delayed capture for separate authorization and capture workflows: https://developer.squareup.com/docs/payments-api/take-payments/card-payments/delayed-capture
+- Square Terminal supports in-person card-present collection from a custom application: https://developer.squareup.com/docs/terminal-api/overview
 - Twilio Programmable Messaging can support stateful two-way SMS conversations: https://www.twilio.com/docs/messaging/tutorials/how-to-create-sms-conversations
 
 These references are implementation aids, not permission to bypass repository assessment or current vendor requirements.

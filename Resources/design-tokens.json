@@ -1,0 +1,177 @@
+{
+  "name": "Pascucci Prestige Design System",
+  "version": "1.0.0",
+  "description": "Luxury Auto Concierge — dark cinematic editorial aesthetic",
+  "colors": {
+    "brand": {
+      "obsidian": "#090A0B",
+      "charcoal": "#202225",
+      "ivory": "#F1EEE7",
+      "gold": "#B89A63",
+      "red": "#A7191F",
+      "titanium": "#8C9094",
+      "muted": "#15171A"
+    },
+    "semantic": {
+      "background": "#090A0B",
+      "foreground": "#F1EEE7",
+      "card": "#202225",
+      "cardForeground": "#F1EEE7",
+      "popover": "#202225",
+      "popoverForeground": "#F1EEE7",
+      "primary": "#B89A63",
+      "primaryForeground": "#090A0B",
+      "secondary": "#202225",
+      "secondaryForeground": "#F1EEE7",
+      "muted": "#15171A",
+      "mutedForeground": "#8C9094",
+      "accent": "#B89A63",
+      "accentForeground": "#090A0B",
+      "destructive": "#A7191F",
+      "destructiveForeground": "#F1EEE7",
+      "border": "rgba(241, 238, 231, 0.10)",
+      "input": "rgba(241, 238, 231, 0.14)",
+      "ring": "#B89A63"
+    }
+  },
+  "typography": {
+    "families": {
+      "serif": "\"Cormorant Garamond\", \"Libre Baskerville\", Georgia, serif",
+      "sans":  "\"Inter\", \"Helvetica Neue\", Arial, sans-serif",
+      "mono":  "\"Oswald\", \"DIN Condensed\", \"Roboto Condensed\", sans-serif"
+    },
+    "googleFontsHref": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@300;400;500;600&display=swap",
+    "headingDefaults": {
+      "fontFamily": "serif",
+      "fontWeight": 400,
+      "letterSpacing": "-0.01em"
+    },
+    "scale": {
+      "h1": { "mobile": "3rem", "desktop": "6rem", "xl": "8rem", "weight": 400, "leading": 1.02, "family": "serif" },
+      "h2": { "mobile": "2.25rem", "desktop": "3.75rem", "xl": "6rem", "weight": 400, "leading": 1.1, "family": "serif" },
+      "h3": { "mobile": "1.5rem", "desktop": "1.875rem", "weight": 400, "leading": 1.2, "family": "serif" },
+      "bodyLg": { "mobile": "1rem", "desktop": "1.125rem", "weight": 400, "leading": 1.6, "family": "sans" },
+      "body": { "mobile": "0.875rem", "desktop": "1rem", "weight": 400, "leading": 1.6, "family": "sans" },
+      "small": { "mobile": "0.75rem", "desktop": "0.875rem", "weight": 400, "leading": 1.5, "family": "sans" }
+    },
+    "utilities": {
+      "eyebrow": {
+        "fontFamily": "mono",
+        "textTransform": "uppercase",
+        "letterSpacing": "0.22em",
+        "fontSize": "0.72rem",
+        "fontWeight": 500,
+        "color": "#B89A63"
+      },
+      "spec": {
+        "fontFamily": "mono",
+        "textTransform": "uppercase",
+        "letterSpacing": "0.14em",
+        "fontSize": "0.78rem",
+        "fontWeight": 400,
+        "color": "#8C9094"
+      }
+    },
+    "rendering": {
+      "webkitFontSmoothing": "antialiased",
+      "mozOsxFontSmoothing": "grayscale",
+      "fontFeatureSettings": "\"ss01\", \"cv11\""
+    }
+  },
+  "spacing": {
+    "container": { "maxWidth": "1280px", "paddingX": { "mobile": "1.25rem", "desktop": "2.5rem" } },
+    "section":   { "paddingY": { "mobile": "6rem", "desktop": "8rem" } },
+    "hero":      { "minHeight": "100svh", "paddingTop": "8rem", "paddingBottom": { "mobile": "5rem", "desktop": "7rem" } },
+    "grids": {
+      "gapDefault": "2rem",
+      "gapTight": "0.625rem",
+      "hairlineDivider": "1px (use gap-px on bg-border)"
+    },
+    "rhythm": {
+      "eyebrowToHeading": "1rem-1.5rem",
+      "headingToBody": "1.5rem-2rem",
+      "bodyToCTA": "2.5rem"
+    }
+  },
+  "borders": {
+    "radius": { "base": "0.25rem", "sm": "0", "md": "0.125rem", "lg": "0.25rem", "xl": "0.5rem" },
+    "width": "1px",
+    "color": "rgba(241, 238, 231, 0.10)",
+    "hairline": { "height": "1px", "background": "#B89A63", "opacity": 0.45 },
+    "ruleGold": "linear-gradient(90deg, transparent, #B89A63, transparent)"
+  },
+  "shadows": {
+    "philosophy": "Minimal. Use contrast and gradients instead of drop shadows.",
+    "button": "0 1px 2px 0 rgb(0 0 0 / 0.05)"
+  },
+  "buttons": {
+    "shared": {
+      "display": "inline-flex",
+      "alignItems": "center",
+      "justifyContent": "center",
+      "gap": "0.6rem",
+      "fontFamily": "mono",
+      "textTransform": "uppercase",
+      "letterSpacing": "0.18em",
+      "fontSize": "0.78rem",
+      "padding": "0.95rem 1.6rem",
+      "borderWidth": "1px",
+      "transition": "all 0.3s ease",
+      "cursor": "pointer"
+    },
+    "primary": {
+      "background": "#A7191F",
+      "color": "#F1EEE7",
+      "borderColor": "#A7191F",
+      "hover": { "background": "transparent", "color": "#F1EEE7", "borderColor": "#F1EEE7" }
+    },
+    "ghost": {
+      "background": "transparent",
+      "color": "#F1EEE7",
+      "borderColor": "rgba(241, 238, 231, 0.35)",
+      "hover": { "borderColor": "#B89A63", "color": "#B89A63" }
+    },
+    "gold": {
+      "background": "#B89A63",
+      "color": "#090A0B",
+      "borderColor": "#B89A63",
+      "hover": { "background": "transparent", "color": "#B89A63" }
+    }
+  },
+  "imagery": {
+    "hero": {
+      "objectFit": "cover",
+      "minHeight": "100svh",
+      "filter": "brightness(1.32) saturate(1.04)",
+      "overlays": [
+        "linear-gradient(to top, rgba(9,10,11,0.7), rgba(9,10,11,0.35), rgba(9,10,11,0.05))",
+        "linear-gradient(to right, rgba(9,10,11,0.4), rgba(9,10,11,0.1), transparent)"
+      ]
+    },
+    "card": { "aspectRatio": "4/3", "objectFit": "cover", "hoverScale": 1.05, "hoverDurationMs": 1200 },
+    "atmosphere": { "opacity": 0.5, "overlay": "linear-gradient(to top, #090A0B, rgba(9,10,11,0.7), rgba(9,10,11,0.4))" }
+  },
+  "motion": {
+    "fadeUp": { "from": { "opacity": 0, "translateY": "14px" }, "to": { "opacity": 1, "translateY": 0 }, "duration": "0.9s", "easing": "ease" },
+    "hover":  { "duration": "0.3s", "easing": "ease" },
+    "imageZoom": { "duration": "1200ms" },
+    "arrowShift": "translateX(4px) on group-hover"
+  },
+  "icons": {
+    "library": "lucide-react",
+    "sizes": { "inline": "14-18px", "spec": "12px" },
+    "accentColor": "#B89A63"
+  },
+  "breakpoints": {
+    "sm": "640px",
+    "md": "768px",
+    "lg": "1024px",
+    "xl": "1280px",
+    "2xl": "1536px"
+  },
+  "sectionPattern": {
+    "order": ["eyebrow", "heading-with-gold-em-accent", "body", "cta-row"],
+    "backgroundRotation": ["obsidian", "charcoal", "obsidian", "ivory"],
+    "headingAccentMarkup": "<em class=\"text-gold not-italic font-light\">word</em>"
+  }
+}

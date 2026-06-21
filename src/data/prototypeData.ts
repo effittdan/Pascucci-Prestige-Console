@@ -162,6 +162,295 @@ export const vehicles = [
   { name: "Range Rover Autobiography", plate: "PP-RR", status: "Ready", next: "Delivery 4:00 PM", revenue: "$2,150", readiness: 96 },
 ];
 
+export type FleetManagerVehicle = {
+  id: string;
+  name: string;
+  category: string;
+  status: "Published" | "Draft" | "Needs media" | "Hidden";
+  displaySlot: string;
+  dailyRate: string;
+  hourlyRate: string;
+  passengers: string;
+  drivetrain: string;
+  transmission: string;
+  engine: string;
+  power: string;
+  heroImage: string;
+  photos: string[];
+  photoCount: number;
+  maxPhotos: number;
+  requiredShots: string[];
+  missingShots: string[];
+  highlights: string[];
+  publicLine: string;
+  nextAction: string;
+};
+
+export const fleetManagerVehicles: FleetManagerVehicle[] = [
+  {
+    id: "fleet-mclaren-gt",
+    name: "McLaren GT",
+    category: "Grand Tourer",
+    status: "Published",
+    displaySlot: "Featured 01",
+    dailyRate: "$1,099",
+    hourlyRate: "$250",
+    passengers: "2",
+    drivetrain: "Rear-wheel drive",
+    transmission: "7-speed dual-clutch",
+    engine: "4.0L twin-turbocharged V8",
+    power: "612 hp",
+    heroImage: "/concierge-assets/cars/mclaren-gt-real-01.jpg",
+    photos: [
+      "/concierge-assets/cars/mclaren-gt-real-01.jpg",
+      "/concierge-assets/cars/mclaren-gt-real-02.jpg",
+      "/concierge-assets/cars/mclaren-gt-real-03.jpg",
+      "/concierge-assets/cars/mclaren-gt-real-04.jpg",
+      "/concierge-assets/cars/mclaren-gt-real-05.jpg",
+      "/concierge-assets/cars/mclaren-gt-real-06.jpg",
+      "/concierge-assets/cars/mclaren-gt-real-07.jpg",
+      "/concierge-assets/cars/mclaren-gt-real-08.jpg",
+      "/concierge-assets/cars/mclaren-gt-real-09.jpg",
+      "/concierge-assets/cars/mclaren-gt-real-10.jpg",
+      "/concierge-assets/cars/mclaren-gt-real-11.jpg",
+      "/concierge-assets/cars/mclaren-gt-real-12.jpg",
+    ],
+    photoCount: 12,
+    maxPhotos: 12,
+    requiredShots: [
+      "Front three-quarter",
+      "Doors-open exterior",
+      "Rear three-quarter",
+      "Cockpit",
+      "Front seats",
+      "Rear luggage area",
+      "Front luggage area",
+      "Wheel detail",
+      "Console controls",
+      "McLaren badge",
+      "Infotainment",
+      "Front doors-open view",
+    ],
+    missingShots: [],
+    highlights: ["Grand touring comfort", "Low-slung supercar profile", "Concierge delivery"],
+    publicLine: "Supercar presence with long-distance composure.",
+    nextAction: "Real photography set complete",
+  },
+  {
+    id: "fleet-lamborghini-urus",
+    name: "Lamborghini Urus",
+    category: "Luxury SUV",
+    status: "Published",
+    displaySlot: "Featured 02",
+    dailyRate: "$1,199",
+    hourlyRate: "$300",
+    passengers: "5",
+    drivetrain: "All-wheel drive",
+    transmission: "8-speed automatic",
+    engine: "4.0L twin-turbocharged V8",
+    power: "641 hp",
+    heroImage: "/concierge-assets/cars/lamborghini-urus-real-01.jpg",
+    photos: [
+      "/concierge-assets/cars/lamborghini-urus-real-01.jpg",
+      "/concierge-assets/cars/lamborghini-urus-real-02.jpg",
+      "/concierge-assets/cars/lamborghini-urus-real-03.jpg",
+      "/concierge-assets/cars/lamborghini-urus-real-04.jpg",
+      "/concierge-assets/cars/lamborghini-urus-real-05.jpg",
+      "/concierge-assets/cars/lamborghini-urus-real-06.jpg",
+      "/concierge-assets/cars/lamborghini-urus-real-07.jpg",
+      "/concierge-assets/cars/lamborghini-urus-real-08.jpg",
+      "/concierge-assets/cars/lamborghini-urus-real-09.jpg",
+      "/concierge-assets/cars/lamborghini-urus-real-10.jpg",
+      "/concierge-assets/cars/lamborghini-urus-real-11.jpg",
+      "/concierge-assets/cars/lamborghini-urus-real-12.jpg",
+    ],
+    photoCount: 12,
+    maxPhotos: 12,
+    requiredShots: [
+      "Front three-quarter",
+      "Alternate front three-quarter",
+      "Side profile",
+      "Rear three-quarter",
+      "Cockpit",
+      "Front seats",
+      "Rear seats",
+      "Cargo area",
+      "Wheel detail",
+      "Lamborghini badge",
+      "Door trim",
+      "Drive-mode controls",
+    ],
+    missingShots: [],
+    highlights: ["Orange exterior", "Super-SUV performance", "Flexible delivery"],
+    publicLine: "Supercar soul. SUV freedom.",
+    nextAction: "Real photography set complete",
+  },
+  {
+    id: "fleet-porsche-911-cabriolet",
+    name: "Porsche 911 Cabriolet",
+    category: "Convertible",
+    status: "Published",
+    displaySlot: "Featured 03",
+    dailyRate: "$799",
+    hourlyRate: "$160",
+    passengers: "4",
+    drivetrain: "Rear-wheel drive",
+    transmission: "8-speed PDK",
+    engine: "3.0L twin-turbocharged flat-six",
+    power: "379 hp",
+    heroImage: "/concierge-assets/cars/porsche-911-cabriolet-real-01.jpg",
+    photos: [
+      "/concierge-assets/cars/porsche-911-cabriolet-real-01.jpg",
+      "/concierge-assets/cars/porsche-911-cabriolet-real-02.jpg",
+      "/concierge-assets/cars/porsche-911-cabriolet-real-03.jpg",
+      "/concierge-assets/cars/porsche-911-cabriolet-real-04.jpg",
+      "/concierge-assets/cars/porsche-911-cabriolet-real-05.jpg",
+      "/concierge-assets/cars/porsche-911-cabriolet-real-06.jpg",
+      "/concierge-assets/cars/porsche-911-cabriolet-real-07.jpg",
+      "/concierge-assets/cars/porsche-911-cabriolet-real-08.jpg",
+      "/concierge-assets/cars/porsche-911-cabriolet-real-09.jpg",
+      "/concierge-assets/cars/porsche-911-cabriolet-real-10.jpg",
+      "/concierge-assets/cars/porsche-911-cabriolet-real-11.jpg",
+      "/concierge-assets/cars/porsche-911-cabriolet-real-12.jpg",
+    ],
+    photoCount: 12,
+    maxPhotos: 12,
+    requiredShots: [
+      "Front three-quarter, roof open",
+      "Front three-quarter, roof closed",
+      "Side profile, roof open",
+      "Rear three-quarter, roof open",
+      "Cockpit",
+      "Front seats",
+      "Rear seats",
+      "Front luggage area",
+      "Wheel detail",
+      "Rear spoiler and badge",
+      "Center console",
+      "Infotainment and drive controls",
+    ],
+    missingShots: [],
+    highlights: ["Silver cabriolet", "Open-air grand touring", "Availability by request"],
+    publicLine: "Open-air precision with everyday polish.",
+    nextAction: "Real photography set complete",
+  },
+  {
+    id: "fleet-maserati-mc20",
+    name: "Maserati MC20",
+    category: "Supercar",
+    status: "Needs media",
+    displaySlot: "Standard",
+    dailyRate: "Request",
+    hourlyRate: "Request",
+    passengers: "2",
+    drivetrain: "Rear-wheel drive",
+    transmission: "8-speed dual-clutch",
+    engine: "3.0L twin-turbo Nettuno V6",
+    power: "621 hp",
+    heroImage: "/concierge-assets/cars/maserati-mc20.png",
+    photos: ["/concierge-assets/cars/maserati-mc20.png"],
+    photoCount: 1,
+    maxPhotos: 12,
+    requiredShots: ["Primary exterior"],
+    missingShots: ["Side profile", "Rear detail", "Cockpit", "Butterfly doors", "Wheel detail"],
+    highlights: ["Italian supercar feel", "Butterfly doors", "Low-production presence"],
+    publicLine: "Sculpted speed with grand touring poise.",
+    nextAction: "Complete launch gallery before promotion",
+  },
+];
+
+export const fleetManagerBlueprint = [
+  "Upload up to 12 public photos per vehicle",
+  "Choose one card/hero image",
+  "Tag exterior, interior, detail, and feature shots",
+  "Set daily and hourly pricing",
+  "Publish, draft, hide, or request more media",
+  "Feed the public site and future reservation calendar from one vehicle record",
+];
+
+export type ClientIntakeStage = "Lead" | "Profile started" | "Documents needed" | "Payment ready" | "Approved";
+
+export type ClientIntakeProfile = {
+  id: string;
+  name: string;
+  stage: ClientIntakeStage;
+  source: string;
+  preferredVehicle: string;
+  tripWindow: string;
+  profileCompleteness: number;
+  paymentStatus: string;
+  squareCustomer: string;
+  savedPayment: string;
+  nextAction: string;
+};
+
+export const clientIntakeProfiles: ClientIntakeProfile[] = [
+  {
+    id: "CLI-2026-0188",
+    name: "Maya Ellison",
+    stage: "Profile started",
+    source: "iPad showroom intake",
+    preferredVehicle: "Porsche 911 Cabriolet",
+    tripWindow: "Weekend rental",
+    profileCompleteness: 62,
+    paymentStatus: "Setup link pending",
+    squareCustomer: "Will create on submit",
+    savedPayment: "None saved",
+    nextAction: "Collect license and payment preference",
+  },
+  {
+    id: "CLI-2026-0184",
+    name: "Julian Reed",
+    stage: "Payment ready",
+    source: "Concierge referral",
+    preferredVehicle: "Lamborghini Urus",
+    tripWindow: "Jun 22-24",
+    profileCompleteness: 86,
+    paymentStatus: "Payment method saved",
+    squareCustomer: "SQ-CUST-0184",
+    savedPayment: "Visa ending in 4242",
+    nextAction: "Send approved reservation payment request",
+  },
+  {
+    id: "CLI-2026-0179",
+    name: "Bennett Group",
+    stage: "Documents needed",
+    source: "Website inquiry",
+    preferredVehicle: "McLaren GT",
+    tripWindow: "Corporate arrival",
+    profileCompleteness: 48,
+    paymentStatus: "No payment preference",
+    squareCustomer: "Not created",
+    savedPayment: "None saved",
+    nextAction: "Request driver roster and insurance",
+  },
+];
+
+export const intakeProfileRequirements = [
+  "Contact details and preferred communication",
+  "Primary renter identity",
+  "Driver license and insurance uploads",
+  "Rental purpose, location, and vehicle interest",
+  "Payment consent and Square customer setup",
+  "Approval status for future rentals",
+];
+
+export const intakePaymentBlueprint = [
+  "Create or reuse a Square Customer for each approved renter",
+  "Collect remotely with Square Web Payments or in person with Square Terminal",
+  "Store only Square IDs, brand, last four, consent timestamp, and status",
+  "Use the approved card on file for future authorized reservation requests",
+  "Keep the $500 security authorization separate from rental charges",
+];
+
+export const ipadIntakeSteps = [
+  { label: "Profile", detail: "Name, phone, email, address, and preferred contact." },
+  { label: "Rental", detail: "Vehicle interest, date window, delivery location, and occasion." },
+  { label: "Documents", detail: "License, insurance, additional drivers, and approval notes." },
+  { label: "Payment", detail: "Square setup link, card on file, or in-person Terminal payment with explicit consent." },
+  { label: "Review", detail: "Concierge review before profile becomes approved for reservations." },
+];
+
 export const reservations = [
   { id: "PP-R-2026-00042", customer: "Avery Stone", vehicle: "Lamborghini Urus", status: "Pending approval", total: "$4,850", dates: "Jun 8-11", issue: "Document blocked" },
   { id: "PP-R-2026-00043", customer: "Bennett Group", vehicle: "Range Rover Autobiography", status: "Confirmed", total: "$2,150", dates: "Jun 8-9", issue: "Ready" },
@@ -195,4 +484,153 @@ export const securityPrinciples = [
   { icon: ShieldCheck, label: "RLS-first permissions", text: "Every future mutation and record view maps to a role and organization policy." },
   { icon: FileCheck2, label: "Private document handling", text: "Sensitive files are designed for private buckets and signed access." },
   { icon: ClipboardCheck, label: "Audited state changes", text: "Role changes, overrides, payments, and status transitions are modeled as traceable events." },
+];
+
+export type InspectionStatus = "Draft" | "In progress" | "Awaiting acknowledgment" | "Under review" | "Completed";
+
+export type DamageReviewStatus = "Not required" | "Pending" | "Possible change" | "Confirmed new damage" | "Dismissed";
+
+export type InspectionQueueItem = {
+  id: string;
+  reservation: string;
+  customer: string;
+  vehicle: string;
+  type: "Checkout" | "Return" | "Inventory";
+  status: InspectionStatus;
+  damageReview: DamageReviewStatus;
+  due: string;
+  assignedTo: string;
+  requiredPhotos: number;
+  completedPhotos: number;
+  note: string;
+};
+
+export type InspectionZone = {
+  code: string;
+  label: string;
+  group: string;
+  required: boolean;
+  complete: boolean;
+  quality: "Ready" | "Needs retake" | "Reference only" | "Missing";
+};
+
+export type ComparisonPair = {
+  zone: string;
+  checkoutTime: string;
+  returnTime: string;
+  status: DamageReviewStatus;
+  note: string;
+};
+
+export const inspectionMetrics = [
+  { label: "Due today", value: "7", detail: "4 checkout, 3 return" },
+  { label: "Photo zones open", value: "18", detail: "Across active inspections" },
+  { label: "Acknowledgments", value: "2", detail: "Customer review pending" },
+  { label: "Manager reviews", value: "3", detail: "Possible damage flags" },
+];
+
+export const inspectionQueue: InspectionQueueItem[] = [
+  {
+    id: "INS-2026-0142",
+    reservation: "PP-R-2026-00042",
+    customer: "Avery Stone",
+    vehicle: "Lamborghini Urus",
+    type: "Checkout",
+    status: "In progress",
+    damageReview: "Not required",
+    due: "8:15 AM",
+    assignedTo: "Theresa",
+    requiredPhotos: 30,
+    completedPhotos: 22,
+    note: "Exterior complete. Interior, keys, and fuel display remain.",
+  },
+  {
+    id: "INS-2026-0139",
+    reservation: "PP-R-2026-00038",
+    customer: "Miles Carter",
+    vehicle: "Mercedes-Benz G 63",
+    type: "Return",
+    status: "Under review",
+    damageReview: "Possible change",
+    due: "10:15 AM",
+    assignedTo: "Dan",
+    requiredPhotos: 30,
+    completedPhotos: 30,
+    note: "Passenger rear wheel flag needs manager decision.",
+  },
+  {
+    id: "INS-2026-0145",
+    reservation: "PP-R-2026-00043",
+    customer: "Bennett Group",
+    vehicle: "Range Rover Autobiography",
+    type: "Checkout",
+    status: "Awaiting acknowledgment",
+    damageReview: "Not required",
+    due: "3:30 PM",
+    assignedTo: "Rosie",
+    requiredPhotos: 30,
+    completedPhotos: 30,
+    note: "Customer link sent. Internal report is locked.",
+  },
+  {
+    id: "INS-2026-0148",
+    reservation: "PP-R-2026-00047",
+    customer: "Sofia Nguyen",
+    vehicle: "Ferrari 296",
+    type: "Return",
+    status: "Draft",
+    damageReview: "Pending",
+    due: "5:00 PM",
+    assignedTo: "Mark",
+    requiredPhotos: 30,
+    completedPhotos: 4,
+    note: "Return photos started after airport pickup.",
+  },
+];
+
+export const inspectionZones: InspectionZone[] = [
+  { code: "front", label: "Front straight-on", group: "Exterior", required: true, complete: true, quality: "Ready" },
+  { code: "rear", label: "Rear straight-on", group: "Exterior", required: true, complete: true, quality: "Ready" },
+  { code: "driver-side", label: "Driver side", group: "Exterior", required: true, complete: true, quality: "Ready" },
+  { code: "passenger-side", label: "Passenger side", group: "Exterior", required: true, complete: true, quality: "Ready" },
+  { code: "fd-wheel", label: "Front driver wheel", group: "Wheels", required: true, complete: true, quality: "Reference only" },
+  { code: "fp-wheel", label: "Front passenger wheel", group: "Wheels", required: true, complete: true, quality: "Ready" },
+  { code: "rd-wheel", label: "Rear driver wheel", group: "Wheels", required: true, complete: false, quality: "Needs retake" },
+  { code: "rp-wheel", label: "Rear passenger wheel", group: "Wheels", required: true, complete: false, quality: "Missing" },
+  { code: "cockpit", label: "Driver cockpit and dashboard", group: "Interior", required: true, complete: false, quality: "Missing" },
+  { code: "odometer", label: "Odometer and warning lights", group: "Interior", required: true, complete: false, quality: "Missing" },
+  { code: "keys", label: "Key and accessory set", group: "Additional", required: true, complete: false, quality: "Missing" },
+];
+
+export const comparisonPairs: ComparisonPair[] = [
+  {
+    zone: "Passenger rear wheel",
+    checkoutTime: "Jun 8, 8:04 AM",
+    returnTime: "Jun 9, 10:18 AM",
+    status: "Possible change",
+    note: "New outer-rim mark flagged by staff. Manager review required before claim language.",
+  },
+  {
+    zone: "Front fascia and lower splitter",
+    checkoutTime: "Jun 8, 8:06 AM",
+    returnTime: "Jun 9, 10:21 AM",
+    status: "Dismissed",
+    note: "Lighting variation only. Existing marker retained on customer-facing report.",
+  },
+  {
+    zone: "Cargo area",
+    checkoutTime: "Jun 8, 8:12 AM",
+    returnTime: "Jun 9, 10:26 AM",
+    status: "Not required",
+    note: "No visible change. Accessory kit confirmed.",
+  },
+];
+
+export const inspectionFoundation = [
+  "Private original image storage with signed display URLs",
+  "Versioned inspection records locked after submission",
+  "Customer-safe report snapshots separate from internal notes",
+  "Human-only damage confirmation and charge decisions",
+  "Audit events for uploads, retakes, annotations, review, and voids",
+  "Future AI comparison boundary returns possible changes only",
 ];
