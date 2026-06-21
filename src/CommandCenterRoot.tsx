@@ -60,7 +60,10 @@ function StaffLogin() {
     });
 
     setSending(false);
-    setMessage(error ? error.message : "Check your email for your secure sign-in link.");
+    const errorMessage = error?.message && error.message !== "{}"
+      ? error.message
+      : "We could not send the sign-in link. Confirm that this exact email has been invited.";
+    setMessage(error ? errorMessage : "Check your email for your secure sign-in link.");
   };
 
   return (
